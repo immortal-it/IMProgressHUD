@@ -84,6 +84,9 @@ class ViewController: UIViewController {
             }),
             CellModel(name: "Asymmetric Fade Circle", selectHandler: {
                 IMProgressHUD.showIndicator(.asymmetricFadeCircle, message: "Loading")
+            }),
+            CellModel(name: "Pulse", selectHandler: {
+                IMProgressHUD.showIndicator(.pulse, message: "Loading")
             })
         ]), SectionModel(name: "Progress", models: [
             CellModel(name: "Default", selectHandler: {
