@@ -66,7 +66,7 @@ dependencies: [
 
 ## Usage
 
-(see sample Xcode project in `Demo`)
+(see sample Xcode project in `Demon`)
 
 `IMProgressHUD` is created as a singleton.
 
