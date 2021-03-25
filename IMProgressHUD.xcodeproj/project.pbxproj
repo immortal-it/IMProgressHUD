@@ -21,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5C24226A260C2EE3009CF0DE /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		5C9D00392603623A00E979C2 /* IMProgressHUD.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = IMProgressHUD.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C9D003C2603623A00E979C2 /* IMProgressHUD.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IMProgressHUD.h; sourceTree = "<group>"; };
 		5C9D003D2603623A00E979C2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -105,6 +106,7 @@
 				5CD93E392608916C00AF4E38 /* IMProgressHUD.podspec */,
 				5CD93E382608916C00AF4E38 /* LICENSE */,
 				5CD93E3A2608916C00AF4E38 /* Package.swift */,
+				5C24226A260C2EE3009CF0DE /* README.md */,
 			);
 			name = Deployment;
 			sourceTree = "<group>";

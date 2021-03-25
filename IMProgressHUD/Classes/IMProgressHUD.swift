@@ -365,6 +365,15 @@ public class IMProgressHUD: UIView {
         shared.dismiss()
     }
     
+    /// 延时隐藏HUD
+    /// - parameter duration: 延时时间
+    public static func dismissAfter(delay duration: TimeInterval) {
+        guard isVisible else {
+            return
+        }
+        shared.dismissAfter(delay: duration)()
+    }
+    
     // MARK: - Show
     
     /// 显示HUD
@@ -468,13 +477,13 @@ public class IMProgressHUD: UIView {
     }
     
     /// 显示HUD
-    /// - parameter animationType: 活动指示器动画类型, 默认`AnimationType.default`
+    /// - parameter indicatorType: 活动指示器动画类型, 默认`ActivityIndicatorType.default`
     /// - parameter message: 显示的文本内容，默认`nil`
-    public static func showIndicator(_ animationType: ActivityIndicatorType = .default,
+    public static func showIndicator(_ indicatorType: ActivityIndicatorType = .default,
                                      message: String? = nil) {
         show {
             $0.message = message
-            $0.setActivity(animationType)
+            $0.setActivity(indicatorType)
         }
     }
     
