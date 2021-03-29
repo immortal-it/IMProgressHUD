@@ -371,7 +371,7 @@ public class IMProgressHUD: UIView {
         guard isVisible else {
             return
         }
-        shared.dismissAfter(delay: duration)()
+        shared.dismissAfter(delay: duration)
     }
     
     // MARK: - Show
