@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5C9942B226466380006FFED8 /* IMProgressHUD.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5C9D00392603623A00E979C2 /* IMProgressHUD.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5C9D003E2603623A00E979C2 /* IMProgressHUD.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9D003C2603623A00E979C2 /* IMProgressHUD.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5CD93E2026088CA500AF4E38 /* IMStateAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD93E1D26088CA500AF4E38 /* IMStateAnimation.swift */; };
 		5CD93E2126088CA500AF4E38 /* IMActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD93E1E26088CA500AF4E38 /* IMActivityIndicator.swift */; };
@@ -19,6 +20,19 @@
 		5CD93E4F2608939C00AF4E38 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5CD93E4D2608939C00AF4E38 /* LaunchScreen.storyboard */; };
 		5CD93EEC2609FA0A00AF4E38 /* IMProgressIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD93EEB2609FA0A00AF4E38 /* IMProgressIndicator.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		5C9942B126466379006FFED8 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				5C9942B226466380006FFED8 /* IMProgressHUD.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		5C24226A260C2EE3009CF0DE /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -60,6 +74,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5C9942AB26466339006FFED8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		5C9D002F2603623A00E979C2 = {
 			isa = PBXGroup;
 			children = (
@@ -67,6 +88,7 @@
 				5C9D003B2603623A00E979C2 /* IMProgressHUD */,
 				5CD93E412608939B00AF4E38 /* Demon */,
 				5C9D003A2603623A00E979C2 /* Products */,
+				5C9942AB26466339006FFED8 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -164,6 +186,7 @@
 				5CD93E3C2608939B00AF4E38 /* Sources */,
 				5CD93E3D2608939B00AF4E38 /* Frameworks */,
 				5CD93E3E2608939B00AF4E38 /* Resources */,
+				5C9942B126466379006FFED8 /* CopyFiles */,
 			);
 			buildRules = (
 			);
