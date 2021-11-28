@@ -11,6 +11,7 @@
 		5C9D003E2603623A00E979C2 /* IMProgressHUD.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9D003C2603623A00E979C2 /* IMProgressHUD.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5CA20B9B27525DC600D4812B /* UIView+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA20B9A27525DC600D4812B /* UIView+Layout.swift */; };
 		5CA20B9D27525DE300D4812B /* UIApplication+Window.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA20B9C27525DE300D4812B /* UIApplication+Window.swift */; };
+		5CA20B9F2753B30100D4812B /* NSLayoutConstraint+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA20B9E2753B30100D4812B /* NSLayoutConstraint+Ext.swift */; };
 		5CD93E2026088CA500AF4E38 /* IMStateAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD93E1D26088CA500AF4E38 /* IMStateAnimation.swift */; };
 		5CD93E2126088CA500AF4E38 /* IMActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD93E1E26088CA500AF4E38 /* IMActivityIndicator.swift */; };
 		5CD93E2226088CA500AF4E38 /* IMProgressHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD93E1F26088CA500AF4E38 /* IMProgressHUD.swift */; };
@@ -43,13 +44,14 @@
 		5C9D003D2603623A00E979C2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5CA20B9A27525DC600D4812B /* UIView+Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Layout.swift"; sourceTree = "<group>"; };
 		5CA20B9C27525DE300D4812B /* UIApplication+Window.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIApplication+Window.swift"; sourceTree = "<group>"; };
+		5CA20B9E2753B30100D4812B /* NSLayoutConstraint+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSLayoutConstraint+Ext.swift"; sourceTree = "<group>"; };
 		5CD93E1D26088CA500AF4E38 /* IMStateAnimation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IMStateAnimation.swift; sourceTree = "<group>"; };
 		5CD93E1E26088CA500AF4E38 /* IMActivityIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IMActivityIndicator.swift; sourceTree = "<group>"; };
 		5CD93E1F26088CA500AF4E38 /* IMProgressHUD.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IMProgressHUD.swift; sourceTree = "<group>"; };
 		5CD93E382608916C00AF4E38 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		5CD93E392608916C00AF4E38 /* IMProgressHUD.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = IMProgressHUD.podspec; sourceTree = "<group>"; };
 		5CD93E3A2608916C00AF4E38 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
-		5CD93E402608939B00AF4E38 /* Demon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demon.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5CD93E402608939B00AF4E38 /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5CD93E422608939B00AF4E38 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5CD93E442608939B00AF4E38 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		5CD93E462608939B00AF4E38 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -90,7 +92,7 @@
 			children = (
 				5CD93E372608915E00AF4E38 /* Deployment */,
 				5C9D003B2603623A00E979C2 /* IMProgressHUD */,
-				5CD93E412608939B00AF4E38 /* Demon */,
+				5CD93E412608939B00AF4E38 /* Demo */,
 				5C9D003A2603623A00E979C2 /* Products */,
 				5C9942AB26466339006FFED8 /* Frameworks */,
 			);
@@ -100,7 +102,7 @@
 			isa = PBXGroup;
 			children = (
 				5C9D00392603623A00E979C2 /* IMProgressHUD.framework */,
-				5CD93E402608939B00AF4E38 /* Demon.app */,
+				5CD93E402608939B00AF4E38 /* Demo.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -120,6 +122,7 @@
 			children = (
 				5CA20B9A27525DC600D4812B /* UIView+Layout.swift */,
 				5CA20B9C27525DE300D4812B /* UIApplication+Window.swift */,
+				5CA20B9E2753B30100D4812B /* NSLayoutConstraint+Ext.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -130,8 +133,8 @@
 				5CA20B9927525DAB00D4812B /* Extension */,
 				5CD93E1F26088CA500AF4E38 /* IMProgressHUD.swift */,
 				5CD93E1E26088CA500AF4E38 /* IMActivityIndicator.swift */,
-				5CD93E1D26088CA500AF4E38 /* IMStateAnimation.swift */,
 				5CD93EEB2609FA0A00AF4E38 /* IMProgressIndicator.swift */,
+				5CD93E1D26088CA500AF4E38 /* IMStateAnimation.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -147,7 +150,7 @@
 			name = Deployment;
 			sourceTree = "<group>";
 		};
-		5CD93E412608939B00AF4E38 /* Demon */ = {
+		5CD93E412608939B00AF4E38 /* Demo */ = {
 			isa = PBXGroup;
 			children = (
 				5CD93E422608939B00AF4E38 /* AppDelegate.swift */,
@@ -158,7 +161,7 @@
 				5CD93E4D2608939C00AF4E38 /* LaunchScreen.storyboard */,
 				5CD93E502608939C00AF4E38 /* Info.plist */,
 			);
-			path = Demon;
+			path = Demo;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -193,9 +196,9 @@
 			productReference = 5C9D00392603623A00E979C2 /* IMProgressHUD.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		5CD93E3F2608939B00AF4E38 /* Demon */ = {
+		5CD93E3F2608939B00AF4E38 /* Demo */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5CD93E512608939C00AF4E38 /* Build configuration list for PBXNativeTarget "Demon" */;
+			buildConfigurationList = 5CD93E512608939C00AF4E38 /* Build configuration list for PBXNativeTarget "Demo" */;
 			buildPhases = (
 				5CD93E3C2608939B00AF4E38 /* Sources */,
 				5CD93E3D2608939B00AF4E38 /* Frameworks */,
@@ -206,9 +209,9 @@
 			);
 			dependencies = (
 			);
-			name = Demon;
+			name = Demo;
 			productName = Demon;
-			productReference = 5CD93E402608939B00AF4E38 /* Demon.app */;
+			productReference = 5CD93E402608939B00AF4E38 /* Demo.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -243,7 +246,7 @@
 			projectRoot = "";
 			targets = (
 				5C9D00382603623A00E979C2 /* IMProgressHUD */,
-				5CD93E3F2608939B00AF4E38 /* Demon */,
+				5CD93E3F2608939B00AF4E38 /* Demo */,
 			);
 		};
 /* End PBXProject section */
@@ -279,6 +282,7 @@
 				5CD93E2226088CA500AF4E38 /* IMProgressHUD.swift in Sources */,
 				5CA20B9D27525DE300D4812B /* UIApplication+Window.swift in Sources */,
 				5CD93E2026088CA500AF4E38 /* IMStateAnimation.swift in Sources */,
+				5CA20B9F2753B30100D4812B /* NSLayoutConstraint+Ext.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -499,13 +503,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = Demon/Info.plist;
+				INFOPLIST_FILE = Demo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.immortal.Demon;
+				PRODUCT_BUNDLE_IDENTIFIER = com.immortal.Demo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -518,13 +522,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = Demon/Info.plist;
+				INFOPLIST_FILE = Demo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.immortal.Demon;
+				PRODUCT_BUNDLE_IDENTIFIER = com.immortal.Demo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -552,7 +556,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		5CD93E512608939C00AF4E38 /* Build configuration list for PBXNativeTarget "Demon" */ = {
+		5CD93E512608939C00AF4E38 /* Build configuration list for PBXNativeTarget "Demo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				5CD93E522608939C00AF4E38 /* Debug */,

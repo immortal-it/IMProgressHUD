@@ -27,11 +27,25 @@ extension UIView {
         }
     }
     
+    /// Adds a view to the end of the receiver’s list of subviews.
+    /// Activates each constraint in the specified array.
     func addSubview(_ view: UIView, constraints: NSLayoutConstraint...) {
         if view.translatesAutoresizingMaskIntoConstraints {
             view.translatesAutoresizingMaskIntoConstraints = false
         }
         addSubview(view)
         NSLayoutConstraint.activate(constraints)
+    }
+    
+    /// Adds a view to the end of the receiver’s list of subviews.
+    func addSubviewLayoutEqualToEdges(_ view: UIView) {
+        addSubview(
+            view,
+            constraints:
+                view.leadingAnchor.constraint(equalTo: leadingAnchor),
+                view.trailingAnchor.constraint(equalTo: trailingAnchor),
+                view.topAnchor.constraint(equalTo: topAnchor),
+                view.bottomAnchor.constraint(equalTo: bottomAnchor)
+        )
     }
 }

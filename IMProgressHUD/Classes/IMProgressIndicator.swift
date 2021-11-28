@@ -2,7 +2,7 @@
 //  IMProgressIndicator.swift
 //  IMProgressHUD
 //
-//  Created by xys on 2021/3/23.
+//  Created by immortal on 2021/3/23.
 //
 
 import UIKit

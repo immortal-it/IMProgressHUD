@@ -8,8 +8,8 @@
 
 `IMProgressHUD` is a clean and easy-to-use HUD meant to display the progress of an ongoing task on iOS.
 
-<img src="https://github.com/immortal-it/IMProgressHUD/blob/main/Gifs/demon002.png">
-<img src="https://github.com/immortal-it/IMProgressHUD/blob/main/Gifs/demon001.gif">
+<img src="https://github.com/immortal-it/IMProgressHUD/blob/main/Gifs/demo002.png">
+<img src="https://github.com/immortal-it/IMProgressHUD/blob/main/Gifs/demo001.gif">
 
 ## Requirements
 
@@ -67,7 +67,7 @@ dependencies: [
 
 ## Usage
 
-(see sample Xcode project in `Demon`)
+(see sample Xcode project in `Demo`)
 
 `IMProgressHUD` is created as a singleton.
 
