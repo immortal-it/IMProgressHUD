@@ -120,9 +120,6 @@ public class IMProgressHUD: UIView {
             iconView.image
         }
         set {
-            guard iconView.image != newValue else {
-                return
-            }
             if iconView.image != nil {
                 activityIndicator = nil
             }
@@ -138,9 +135,6 @@ public class IMProgressHUD: UIView {
             messageLabel.text
         }
         set {
-            guard messageLabel.text != newValue else {
-                return
-            }
             messageLabel.text = newValue
             messageLabel.isHidden = newValue == nil
             updateDelayHiding()
@@ -461,7 +455,7 @@ public extension IMProgressHUD {
         configureBlock: @escaping (IMProgressHUD) -> Void
     ) {
         let hud = shared
-        hud.configuration = Self.configuration
+        shared.configuration = Self.configuration
         configureBlock(hud)
         if let containerView = containerView {
             hud.show(in: containerView)
