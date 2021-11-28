@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'IMProgressHUD'
-  s.version = '0.0.1'
+  s.version = '0.0.2'
   s.summary  = 'A clean and lightweight progress HUD for your iOS app.'
   s.description = 'IMProgressHUD is a clean and easy-to-use HUD meant to display the progress of an ongoing task on iOS.'
   
