@@ -95,17 +95,17 @@ public class IMProgressHUD: UIView {
     
     // MARK: - 属性
     
-    private lazy var dimmingView: UIView = makeDimmingView()
+    private lazy var dimmingView: UIView = createDimmingView()
     
-    private lazy var controlView: UIControl = makeControlView()
+    private lazy var controlView: UIControl = createControlView()
     
-    private lazy var contentView: UIStackView = makeContentView()
+    private lazy var contentView: UIStackView = createContentView()
     
-    private lazy var indicatorView: UIView = makeIndicatorView()
+    private lazy var indicatorView: UIView = createIndicatorView()
     
-    private lazy var iconView: UIImageView = makeIconView()
+    private lazy var iconView: UIImageView = createIconView()
 
-    private lazy var messageLabel: UILabel = makeMessageLabel()
+    private lazy var messageLabel: UILabel = createMessageLabel()
 
     private var internalConstraints: [NSLayoutConstraint] = []
 
@@ -146,13 +146,14 @@ public class IMProgressHUD: UIView {
     private func loadSubviews() {
         addSubview(dimmingView)
         addSubview(controlView)
-        controlView.addSubview(contentView)
-        NSLayoutConstraint.activate([
-            contentView.leadingAnchor.constraint(equalTo: controlView.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: controlView.trailingAnchor),
-            contentView.topAnchor.constraint(equalTo: controlView.topAnchor),
-            contentView.bottomAnchor.constraint(equalTo: controlView.bottomAnchor)
-        ])
+        controlView.addSubview(
+            contentView,
+            constraints:
+                contentView.leadingAnchor.constraint(equalTo: controlView.leadingAnchor),
+                contentView.trailingAnchor.constraint(equalTo: controlView.trailingAnchor),
+                contentView.topAnchor.constraint(equalTo: controlView.topAnchor),
+                contentView.bottomAnchor.constraint(equalTo: controlView.bottomAnchor)
+        )
         updateLocationLayout()
         contentView.addArrangedSubview(indicatorView)
         contentView.addArrangedSubview(iconView)
@@ -171,11 +172,19 @@ public class IMProgressHUD: UIView {
         ]
         switch location {
             case .top(offset: let offset):
-                internalConstraints.append(controlView.topAnchor.constraint(equalTo: topAnchor, constant: offset))
+                if #available(iOS 11.0, *) {
+                    internalConstraints.append(controlView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: offset))
+                } else {
+                    internalConstraints.append(controlView.topAnchor.constraint(equalTo: topAnchor, constant: offset))
+                }
             case .center(offset: let offset):
                 internalConstraints.append(controlView.centerYAnchor.constraint(equalTo: centerYAnchor, constant: offset))
             case .bottom(offset: let offset):
-                internalConstraints.append(controlView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -offset))
+                if #available(iOS 11.0, *) {
+                    internalConstraints.append(controlView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -offset))
+                } else {
+                    internalConstraints.append(controlView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -offset))
+                }
         }
         NSLayoutConstraint.activate(internalConstraints)
         layoutIfNeeded()
@@ -313,6 +322,8 @@ public class IMProgressHUD: UIView {
         containerView.subviews.first(where: { $0 is IMProgressHUD }) as? IMProgressHUD
     }
    
+    
+    
     // MARK: - Dismiss
 
     private var willHiding: Bool = false
@@ -374,6 +385,8 @@ public class IMProgressHUD: UIView {
         shared.dismissAfter(delay: duration)
     }
     
+    
+    
     // MARK: - Show
     
     /// 显示HUD
@@ -402,7 +415,7 @@ public class IMProgressHUD: UIView {
         configuration(hud)
         if let containerView = containerView {
             hud.show(in: containerView)
-        } else if let keyWindow = UIApplication.shared.windows.first(where: {$0.isKeyWindow }) ?? UIApplication.shared.windows.first {
+        } else if let keyWindow = UIApplication.shared.compatibleKeyWindow {
             hud.show(in: keyWindow)
         }
     }
@@ -416,7 +429,7 @@ public class IMProgressHUD: UIView {
                                  location: Location) -> IMProgressHUD {
         let hud = IMProgressHUD()
         hud.location = location
-        if let keyWindow = UIApplication.shared.windows.first(where: {$0.isKeyWindow }) ?? UIApplication.shared.windows.first {
+        if let keyWindow = UIApplication.shared.compatibleKeyWindow {
             hud.show(in: keyWindow)
         }
         return hud
@@ -501,27 +514,27 @@ public class IMProgressHUD: UIView {
     }
 }
 
-// MARK: - 控件创建私有方法
+
+
+// MARK: - Private creator
+
 private extension IMProgressHUD {
-    /// 创建控件
-    func makeDimmingView() -> UIView {
+
+    func createDimmingView() -> UIView {
         let dimmingView = UIView(frame: frame)
         dimmingView.isUserInteractionEnabled = true
         dimmingView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         return dimmingView
     }
    
-    func makeControlView() -> UIControl {
+    func createControlView() -> UIControl {
         let controlView = UIControl()
-        controlView.isUserInteractionEnabled = true
         controlView.translatesAutoresizingMaskIntoConstraints = false
         return controlView
     }
     
-    /// 创建控件
-    func makeContentView() -> UIStackView {
+    func createContentView() -> UIStackView {
         let contentView = UIStackView()
-        contentView.isUserInteractionEnabled = true
         contentView.alignment = .center
         contentView.distribution = .equalCentering
         contentView.isLayoutMarginsRelativeArrangement = true
@@ -530,8 +543,7 @@ private extension IMProgressHUD {
         return contentView
     }
     
-    /// 创建控件
-    func makeIconView() -> UIImageView {
+    func createIconView() -> UIImageView {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.isHidden = true
@@ -539,19 +551,16 @@ private extension IMProgressHUD {
         return imageView
     }
     
-    /// 创建控件
-    func makeMessageLabel() -> UILabel {
+    func createMessageLabel() -> UILabel {
         let label = UILabel()
         label.isHidden = true
         label.isUserInteractionEnabled = true
         return label
     }
     
-    /// 创建控件
-    func makeIndicatorView() -> UIView {
+    func createIndicatorView() -> UIView {
         let indicatorView = UIView()
         indicatorView.isHidden = true
-        indicatorView.isUserInteractionEnabled = true
         return indicatorView
     }
 }

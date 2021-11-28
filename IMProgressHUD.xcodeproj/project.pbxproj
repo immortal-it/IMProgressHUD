@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		5C9942B226466380006FFED8 /* IMProgressHUD.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5C9D00392603623A00E979C2 /* IMProgressHUD.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5C9D003E2603623A00E979C2 /* IMProgressHUD.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9D003C2603623A00E979C2 /* IMProgressHUD.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5CA20B9B27525DC600D4812B /* UIView+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA20B9A27525DC600D4812B /* UIView+Layout.swift */; };
+		5CA20B9D27525DE300D4812B /* UIApplication+Window.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA20B9C27525DE300D4812B /* UIApplication+Window.swift */; };
 		5CD93E2026088CA500AF4E38 /* IMStateAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD93E1D26088CA500AF4E38 /* IMStateAnimation.swift */; };
 		5CD93E2126088CA500AF4E38 /* IMActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD93E1E26088CA500AF4E38 /* IMActivityIndicator.swift */; };
 		5CD93E2226088CA500AF4E38 /* IMProgressHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD93E1F26088CA500AF4E38 /* IMProgressHUD.swift */; };
@@ -39,6 +41,8 @@
 		5C9D00392603623A00E979C2 /* IMProgressHUD.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = IMProgressHUD.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C9D003C2603623A00E979C2 /* IMProgressHUD.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IMProgressHUD.h; sourceTree = "<group>"; };
 		5C9D003D2603623A00E979C2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5CA20B9A27525DC600D4812B /* UIView+Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Layout.swift"; sourceTree = "<group>"; };
+		5CA20B9C27525DE300D4812B /* UIApplication+Window.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIApplication+Window.swift"; sourceTree = "<group>"; };
 		5CD93E1D26088CA500AF4E38 /* IMStateAnimation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IMStateAnimation.swift; sourceTree = "<group>"; };
 		5CD93E1E26088CA500AF4E38 /* IMActivityIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IMActivityIndicator.swift; sourceTree = "<group>"; };
 		5CD93E1F26088CA500AF4E38 /* IMProgressHUD.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IMProgressHUD.swift; sourceTree = "<group>"; };
@@ -111,12 +115,22 @@
 			path = IMProgressHUD;
 			sourceTree = "<group>";
 		};
+		5CA20B9927525DAB00D4812B /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				5CA20B9A27525DC600D4812B /* UIView+Layout.swift */,
+				5CA20B9C27525DE300D4812B /* UIApplication+Window.swift */,
+			);
+			path = Extension;
+			sourceTree = "<group>";
+		};
 		5CD93E1C26088C8D00AF4E38 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				5CA20B9927525DAB00D4812B /* Extension */,
+				5CD93E1F26088CA500AF4E38 /* IMProgressHUD.swift */,
 				5CD93E1E26088CA500AF4E38 /* IMActivityIndicator.swift */,
 				5CD93E1D26088CA500AF4E38 /* IMStateAnimation.swift */,
-				5CD93E1F26088CA500AF4E38 /* IMProgressHUD.swift */,
 				5CD93EEB2609FA0A00AF4E38 /* IMProgressIndicator.swift */,
 			);
 			path = Classes;
@@ -261,7 +275,9 @@
 			files = (
 				5CD93EEC2609FA0A00AF4E38 /* IMProgressIndicator.swift in Sources */,
 				5CD93E2126088CA500AF4E38 /* IMActivityIndicator.swift in Sources */,
+				5CA20B9B27525DC600D4812B /* UIView+Layout.swift in Sources */,
 				5CD93E2226088CA500AF4E38 /* IMProgressHUD.swift in Sources */,
+				5CA20B9D27525DE300D4812B /* UIApplication+Window.swift in Sources */,
 				5CD93E2026088CA500AF4E38 /* IMStateAnimation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

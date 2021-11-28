@@ -8,7 +8,7 @@
 import UIKit
 
 /// 活动指示器协议
-public protocol IMActivityIndicating: class {
+public protocol IMActivityIndicating: AnyObject {
     
     /// 活动指示器内容显示在容器视图中
     func apply(in containerView: UIView)
