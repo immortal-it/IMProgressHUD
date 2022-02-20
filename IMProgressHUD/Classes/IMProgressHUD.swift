@@ -107,7 +107,7 @@ public class IMProgressHUD: UIView {
             indicatorView.heightAnchor.constraint(equalToConstant: configuration.indicatorSize.height)
         ]
         NSLayoutConstraint.activate(indicatorInternalConstraints)
-        indicatorView.setNeedsLayout()()
+        indicatorView.setNeedsLayout()
     }
     
     
