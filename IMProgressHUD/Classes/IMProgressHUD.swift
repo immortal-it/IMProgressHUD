@@ -239,7 +239,9 @@ public class IMProgressHUD: UIView {
             return
         }
         alpha = 0.0
-        containerView.addSubviewLayoutEqualToEdges(self)
+        frame = containerView.bounds
+        autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        containerView.addSubview(self)
         UIView.animate(
             withDuration: configuration.fadeDuration,
             delay: 0.0,
@@ -391,7 +393,7 @@ public extension IMProgressHUD {
         public var fadeDuration: TimeInterval = 0.15
                 
         /// 延时隐藏时间，默认 `1.5s`
-        public var delayTime: TimeInterval = 1.5
+        public var delayTime: TimeInterval = 2.5
         
         /// 用户是否可以交互处理，默认 `true`
         public var isUserInteractionEnabled: Bool = true
