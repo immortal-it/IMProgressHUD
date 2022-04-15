@@ -79,7 +79,7 @@ Using `IMProgressHUD` in your app will usually look as simple as this (using Gra
 IMProgressHUD.show()
 DispatchQueue.global().async {
   DispatchQueue.main.async {
-    IMProgressHUD.dismiss()
+    IMProgressHUD.hide()
   }
 }
 ```
@@ -108,8 +108,8 @@ showProgress(_ progress: CGFloat, indicatorType: ProgressIndicatorType = .defaul
 The HUD can be dismissed using:
 
 ```swift
-dismiss()
-dismissAfter(delay duration: TimeInterval)
+hide()
+hideAfterDelay(_ delay: TimeInterval)
 ```
 
 ## Customization

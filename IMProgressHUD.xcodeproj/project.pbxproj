@@ -12,7 +12,9 @@
 		5CA20B9B27525DC600D4812B /* UIView+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA20B9A27525DC600D4812B /* UIView+Layout.swift */; };
 		5CA20B9D27525DE300D4812B /* UIApplication+Window.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA20B9C27525DE300D4812B /* UIApplication+Window.swift */; };
 		5CA20B9F2753B30100D4812B /* NSLayoutConstraint+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA20B9E2753B30100D4812B /* NSLayoutConstraint+Ext.swift */; };
-		5CD93E2026088CA500AF4E38 /* IMStateAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD93E1D26088CA500AF4E38 /* IMStateAnimation.swift */; };
+		5CBF91A128084B0800B06F95 /* CAAnimation+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBF91A028084B0800B06F95 /* CAAnimation+Ext.swift */; };
+		5CBF91A32808529100B06F95 /* IMAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBF91A22808529100B06F95 /* IMAnimator.swift */; };
+		5CD93E2026088CA500AF4E38 /* StateIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD93E1D26088CA500AF4E38 /* StateIndicator.swift */; };
 		5CD93E2126088CA500AF4E38 /* IMActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD93E1E26088CA500AF4E38 /* IMActivityIndicator.swift */; };
 		5CD93E2226088CA500AF4E38 /* IMProgressHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD93E1F26088CA500AF4E38 /* IMProgressHUD.swift */; };
 		5CD93E432608939B00AF4E38 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD93E422608939B00AF4E38 /* AppDelegate.swift */; };
@@ -45,7 +47,9 @@
 		5CA20B9A27525DC600D4812B /* UIView+Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Layout.swift"; sourceTree = "<group>"; };
 		5CA20B9C27525DE300D4812B /* UIApplication+Window.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIApplication+Window.swift"; sourceTree = "<group>"; };
 		5CA20B9E2753B30100D4812B /* NSLayoutConstraint+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSLayoutConstraint+Ext.swift"; sourceTree = "<group>"; };
-		5CD93E1D26088CA500AF4E38 /* IMStateAnimation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IMStateAnimation.swift; sourceTree = "<group>"; };
+		5CBF91A028084B0800B06F95 /* CAAnimation+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CAAnimation+Ext.swift"; sourceTree = "<group>"; };
+		5CBF91A22808529100B06F95 /* IMAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IMAnimator.swift; sourceTree = "<group>"; };
+		5CD93E1D26088CA500AF4E38 /* StateIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StateIndicator.swift; sourceTree = "<group>"; };
 		5CD93E1E26088CA500AF4E38 /* IMActivityIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IMActivityIndicator.swift; sourceTree = "<group>"; };
 		5CD93E1F26088CA500AF4E38 /* IMProgressHUD.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IMProgressHUD.swift; sourceTree = "<group>"; };
 		5CD93E382608916C00AF4E38 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
@@ -123,8 +127,20 @@
 				5CA20B9A27525DC600D4812B /* UIView+Layout.swift */,
 				5CA20B9C27525DE300D4812B /* UIApplication+Window.swift */,
 				5CA20B9E2753B30100D4812B /* NSLayoutConstraint+Ext.swift */,
+				5CBF91A028084B0800B06F95 /* CAAnimation+Ext.swift */,
 			);
 			path = Extension;
+			sourceTree = "<group>";
+		};
+		5CBF919F280840DD00B06F95 /* Animations */ = {
+			isa = PBXGroup;
+			children = (
+				5CBF91A22808529100B06F95 /* IMAnimator.swift */,
+				5CD93E1E26088CA500AF4E38 /* IMActivityIndicator.swift */,
+				5CD93EEB2609FA0A00AF4E38 /* IMProgressIndicator.swift */,
+				5CD93E1D26088CA500AF4E38 /* StateIndicator.swift */,
+			);
+			path = Animations;
 			sourceTree = "<group>";
 		};
 		5CD93E1C26088C8D00AF4E38 /* Classes */ = {
@@ -132,9 +148,7 @@
 			children = (
 				5CA20B9927525DAB00D4812B /* Extension */,
 				5CD93E1F26088CA500AF4E38 /* IMProgressHUD.swift */,
-				5CD93E1E26088CA500AF4E38 /* IMActivityIndicator.swift */,
-				5CD93EEB2609FA0A00AF4E38 /* IMProgressIndicator.swift */,
-				5CD93E1D26088CA500AF4E38 /* IMStateAnimation.swift */,
+				5CBF919F280840DD00B06F95 /* Animations */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -276,13 +290,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5CBF91A128084B0800B06F95 /* CAAnimation+Ext.swift in Sources */,
 				5CD93EEC2609FA0A00AF4E38 /* IMProgressIndicator.swift in Sources */,
 				5CD93E2126088CA500AF4E38 /* IMActivityIndicator.swift in Sources */,
 				5CA20B9B27525DC600D4812B /* UIView+Layout.swift in Sources */,
 				5CD93E2226088CA500AF4E38 /* IMProgressHUD.swift in Sources */,
 				5CA20B9D27525DE300D4812B /* UIApplication+Window.swift in Sources */,
-				5CD93E2026088CA500AF4E38 /* IMStateAnimation.swift in Sources */,
+				5CD93E2026088CA500AF4E38 /* StateIndicator.swift in Sources */,
 				5CA20B9F2753B30100D4812B /* NSLayoutConstraint+Ext.swift in Sources */,
+				5CBF91A32808529100B06F95 /* IMAnimator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -445,7 +461,7 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 202203301850;
+				CURRENT_PROJECT_VERSION = 202204152051;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -459,7 +475,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.0.3;
+				MARKETING_VERSION = 0.0.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.immortal.IMProgressHUD;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -474,7 +490,7 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 202203301850;
+				CURRENT_PROJECT_VERSION = 202204152051;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -488,7 +504,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.0.3;
+				MARKETING_VERSION = 0.0.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.immortal.IMProgressHUD;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -504,14 +520,14 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = GDMD4XZ24N;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Demo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.manjitech.hoe.demo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.immortal.Demo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
@@ -526,14 +542,14 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = GDMD4XZ24N;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Demo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.manjitech.hoe.demo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.immortal.Demo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;

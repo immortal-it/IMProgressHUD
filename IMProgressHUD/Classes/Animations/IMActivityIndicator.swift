@@ -7,68 +7,57 @@
 
 import UIKit
 
-/// 活动指示器协议
+/// A protocol for activity indicator that shows that a task is in progress HUD.
 public protocol IMActivityIndicating: AnyObject {
     
-    /// 活动指示器内容显示在容器视图中
+    /// Add this indicator attach to the container view.
     func apply(in containerView: UIView)
     
-    /// 移除活动指示器
+    /// Remove this indicator attached to the container view.
     func remove()
 }
 
-public extension IMBaseActivityIndicator {
-    /// 活动指示器类型枚举
-    enum IndicatorType: String {
-        /// 渐变圆环样式指示器
-        case `default` = "IMGradientCircleActivityIndicator"
-        /// 无样式
-        case none = ""
-        /// 系统菊花样式指示器
-        case system = "IMSystemActivityIndicator"
-        /// 圆环样式指示器
-        case circle = "IMCircleActivityIndicator"
-        /// 半圆环样式指示器
-        case halfCircle = "IMHalfCircleActivityIndicator"
-        /// 脉冲样式指示器
-        case pulse = "IMPulseActivityIndicator"
-        /// 不对称fade圆环样式指示器
-        case asymmetricFadeCircle = "IMAsymmetricFadeCircleActivityIndicator"
-
-        func getIndicator() -> IMActivityIndicating? {
-            let className = NSStringFromClass(IMBaseActivityIndicator.self).replacingOccurrences(of: "IMBaseActivityIndicator", with: rawValue)
-            guard let classType = NSClassFromString(className) as? IMBaseActivityIndicator.Type else {
-                return nil
-            }
-            return classType.init()
-        }
-    }
-}
-
-/// 活动指示器基类
-public class IMBaseActivityIndicator: IMActivityIndicating {
+/// A base activity indicator that shows that a task is in progress HUD.
+class BaseActivityIndicator: IMActivityIndicating {
     
-    public required init() { }
+    /// The indicator's color.
+    var color: UIColor = .white
+    
+    /// The indicator's line width.
+    var lineWidth: CGFloat = 3.0
+    
+    /// The indicator's animation duration.
+    var duration: TimeInterval = 1.5
+    
+    required init() { }
+    
+    static func asIndicator(_ classString: String) -> BaseActivityIndicator? {
+        let className = NSStringFromClass(BaseActivityIndicator.self)
+            .replacingOccurrences(of: "BaseActivityIndicator", with: classString)
+        guard let classType = NSClassFromString(className) as? BaseActivityIndicator.Type else {
+            return nil
+        }
+        return classType.init()
+    }
 
-    /// 活动指示器内容显示在容器视图中
+    
+    
+    // MARK: - IMActivityIndicating
+    
     public func apply(in containerView: UIView) { }
     
-    /// 移除活动指示器
     public func remove() { }
+    
+    deinit {
+        remove()
+    }
 }
 
-/// 系统菊花样式指示器
-public class IMSystemActivityIndicator: IMBaseActivityIndicator {
+/// A system activity indicator that shows that a task is in progress HUD.
+class SystemActivityIndicator: BaseActivityIndicator {
     
-    /// 系统菊花颜色
-    public var color: UIColor = .lightGray {
-        didSet {
-            activityIndicatorView.color = color
-        }
-    }
-    
-    /// 系统菊花活动指示器
-    public private(set) lazy var activityIndicatorView: UIActivityIndicatorView = {
+    /// A system activity indicator that shows that a task is in progress.
+    private let activityIndicatorView: UIActivityIndicatorView = {
         let indicatorView = UIActivityIndicatorView()
         if #available(iOS 13.0, *) {
             indicatorView.style = .large
@@ -76,43 +65,34 @@ public class IMSystemActivityIndicator: IMBaseActivityIndicator {
             indicatorView.style = .whiteLarge
         }
         indicatorView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        indicatorView.hidesWhenStopped = true
+        indicatorView.hidesWhenStopped = false
         return indicatorView
     }()
     
-    /// 活动指示器内容显示在容器视图中
-    public override func apply(in containerView: UIView) {
+    override var color: UIColor {
+        didSet {
+            activityIndicatorView.color = color
+        }
+    }
+    
+    override func apply(in containerView: UIView) {
         activityIndicatorView.color = color
         activityIndicatorView.frame = containerView.bounds
         activityIndicatorView.startAnimating()
         containerView.addSubview(activityIndicatorView)
     }
     
-    /// 移除活动指示器
-    public override func remove() {
+    override func remove() {
         activityIndicatorView.stopAnimating()
         activityIndicatorView.removeFromSuperview()
     }
-    
-    deinit {
-        remove()
-    }
 }
 
-/// 图层样式指示器
-public class IMActivityIndicatorLayer: IMBaseActivityIndicator {
-   
-    /// 动画时长，默认`1.5s`
-    public var duration: TimeInterval = 1.5
-
-    /// 绘制颜色，默认`UIColor.white`
-    public var color: UIColor = .white
-    
-    /// 绘制线宽，默认`3.0`
-    public var lineWidth: CGFloat = 3.0
-    
-    /// 绘制图层
-    public private(set) lazy var layer: CAShapeLayer = {
+/// A activity indicator layer.
+class ActivityIndicatorLayer: BaseActivityIndicator {
+  
+    /// The indicator’s Core Animation layer used for rendering.
+    let layer: CAShapeLayer = {
         let layer = CAShapeLayer()
         layer.fillColor = nil
         layer.lineCap = .round
@@ -123,8 +103,19 @@ public class IMActivityIndicatorLayer: IMBaseActivityIndicator {
         return layer
     }()
     
-    /// 活动指示器内容显示在容器视图中
-    public override func apply(in containerView: UIView) {
+    override var lineWidth: CGFloat {
+        didSet {
+            layer.lineWidth = lineWidth
+        }
+    }
+    
+    override var color: UIColor {
+        didSet {
+            layer.strokeColor = color.cgColor
+        }
+    }
+    
+    override func apply(in containerView: UIView) {
         let containerSize = containerView.systemLayoutSizeFitting(UIScreen.main.bounds.size)
         layer.frame = CGRect(origin: .zero, size: containerSize)
         layer.strokeColor = color.cgColor
@@ -132,37 +123,34 @@ public class IMActivityIndicatorLayer: IMBaseActivityIndicator {
         loadAnimations()
         containerView.layer.addSublayer(layer)
     }
-    
-    /// 添加动画到layer上
-    func loadAnimations() { }
-    
-    /// 移除活动指示器
-    public override func remove() {
+
+    override func remove() {
         layer.removeFromSuperlayer()
         layer.removeAllAnimations()
         layer.sublayers?.forEach({ $0.removeFromSuperlayer() })
     }
+    
+    /// Add the specified animation objects to the layer’s render tree.
+     func loadAnimations() { }
 }
 
-/// 圆环样式指示器
-public class IMCircleActivityIndicator: IMActivityIndicatorLayer {
+/// A circle style activity indicator that shows that a task is in progress HUD.
+class CircleActivityIndicator: ActivityIndicatorLayer {
     
-    /// 活动指示器内容显示在容器视图中
-    public override func apply(in containerView: UIView) {
+    override func apply(in containerView: UIView) {
         super.apply(in: containerView)
         let containerSize = containerView.systemLayoutSizeFitting(UIScreen.main.bounds.size)
-        let path = UIBezierPath(arcCenter: CGPoint(x: containerSize.width * 0.5, y: containerSize.height * 0.5),
-                                radius: (min(containerSize.height, containerSize.width) - lineWidth) * 0.5,
-                                startAngle: -0.5 * .pi,
-                                endAngle: 1.5 * .pi,
-                                clockwise: true)
- 
+        let path = UIBezierPath(
+            arcCenter: CGPoint(x: containerSize.width * 0.5, y: containerSize.height * 0.5),
+            radius: (min(containerSize.height, containerSize.width) - lineWidth) * 0.5,
+            startAngle: -0.5 * .pi,
+            endAngle: 1.5 * .pi,
+            clockwise: true
+        )
         layer.path = path.cgPath
     }
     
-    /// 添加动画到layer上
     override func loadAnimations() {
-
         let animationRotation = CABasicAnimation(keyPath: "transform.rotation")
         animationRotation.byValue = 2.0 * Float.pi
         animationRotation.timingFunction = CAMediaTimingFunction(name: .linear)
@@ -191,21 +179,19 @@ public class IMCircleActivityIndicator: IMActivityIndicatorLayer {
     }
 }
 
-/// 半圆环样式指示器
-public class IMHalfCircleActivityIndicator: IMCircleActivityIndicator {
-    /// 私有常量数据
+/// A half circle style activity indicator that shows that a task is in progress HUD.
+class HalfCircleActivityIndicator: CircleActivityIndicator {
+    
     private struct ViewMetrics {
-        static let duration: TimeInterval = 1.0
         static let minStrokeValue: Double = 0.02
         static let maxStrokeValue: Double = 0.5
     }
     
-    public required init() {
+    required init() {
         super.init()
-        duration = ViewMetrics.duration
+        duration = 1.0
     }
     
-    /// 添加动画到layer上
     override func loadAnimations() {
         let strokeStartAnimation = CAKeyframeAnimation(keyPath: "strokeStart")
         strokeStartAnimation.values = [
@@ -213,7 +199,7 @@ public class IMHalfCircleActivityIndicator: IMCircleActivityIndicator {
             NSNumber(value: 0.0),
             NSNumber(value: ViewMetrics.maxStrokeValue)
         ]
-        strokeStartAnimation.duration = ViewMetrics.duration
+        strokeStartAnimation.duration = duration
         strokeStartAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
         strokeStartAnimation.isRemovedOnCompletion = false
         strokeStartAnimation.fillMode = .forwards
@@ -247,41 +233,56 @@ public class IMHalfCircleActivityIndicator: IMCircleActivityIndicator {
     }
 }
 
-/// 渐变圆环样式指示器
-public class IMGradientCircleActivityIndicator: IMHalfCircleActivityIndicator {
+/// A gradient circle style activity indicator that shows that a task is in progress HUD.
+class GradientCircleActivityIndicator: HalfCircleActivityIndicator {
     
-    /// 圆环颜色渐变位置，默认`0.7`
-    public var colorLocation: CGFloat = 0.7
+    /// The gradient's color  location.
+    var colorLocation: CGFloat = 0.7
+    
+    let leftGradientLayer: CAGradientLayer = {
+        let layer = CAGradientLayer()
+        layer.startPoint = CGPoint(x: 0.0, y: 0.0)
+        layer.endPoint = CGPoint(x: 0.0, y: 1.0)
+        return layer
+    }()
+    
+    let rightGradientLayer: CAGradientLayer = {
+        let layer = CAGradientLayer()
+        layer.startPoint = CGPoint(x: 0.0, y: 0.0)
+        layer.endPoint = CGPoint(x: 0.0, y: 1.0)
+        return layer
+    }()
+    
+    let maskLayer = CALayer()
+
+    required init() {
+        super.init()
+        maskLayer.addSublayer(rightGradientLayer)
+        maskLayer.addSublayer(leftGradientLayer)
+        layer.mask = maskLayer
+    }
    
-    /// 活动指示器内容显示在容器视图中
-    public override func apply(in containerView: UIView) {
+    override func apply(in containerView: UIView) {
         super.apply(in: containerView)
         let containerSize = containerView.systemLayoutSizeFitting(UIScreen.main.bounds.size)
         
         let strokeStart = lineWidth * 0.5 / (min(containerSize.height, containerSize.width) + lineWidth)
-        let leftGradientLayer: CAGradientLayer = {
-            let layer = CAGradientLayer()
-            layer.colors = [color, color.withAlphaComponent(colorLocation - strokeStart)].map({ $0.cgColor })
-            layer.startPoint = CGPoint(x: 0.0, y: 0.0)
-            layer.endPoint = CGPoint(x: 0.0, y: 1.0)
-            layer.frame = CGRect(x: 0, y: 0, width: (containerSize.width + lineWidth) * 0.5, height: containerSize.height)
-            return layer
-        }()
-        
-        let rightGradientLayer: CAGradientLayer = {
-            let layer = CAGradientLayer()
-            layer.colors = [color.withAlphaComponent(0.0), color.withAlphaComponent(colorLocation)].map({ $0.cgColor })
-            layer.startPoint = CGPoint(x: 0.0, y: 0.0)
-            layer.endPoint = CGPoint(x: 0.0, y: 1.0)
-            layer.frame = CGRect(x: (containerSize.width + lineWidth) * 0.5, y: 0.0, width: containerSize.width * 0.5, height: containerSize.height)
-            return layer
-        }()
-        
-        let maskLayer = CALayer()
+        leftGradientLayer.colors = [color, color.withAlphaComponent(colorLocation - strokeStart)]
+                                   .map({ $0.cgColor })
+        leftGradientLayer.frame = CGRect(
+            x: 0, y: 0,
+            width: (containerSize.width + lineWidth) * 0.5,
+            height: containerSize.height
+        )
+        rightGradientLayer.colors = [color.withAlphaComponent(0.0), color.withAlphaComponent(colorLocation)]
+                                    .map({ $0.cgColor })
+        rightGradientLayer.frame = CGRect(
+            x: (containerSize.width + lineWidth) * 0.5,
+            y: 0.0,
+            width: containerSize.width * 0.5,
+            height: containerSize.height
+        )
         maskLayer.frame = layer.bounds
-        maskLayer.addSublayer(rightGradientLayer)
-        maskLayer.addSublayer(leftGradientLayer)
-        layer.mask = maskLayer
         layer.strokeStart = strokeStart
     }
     
@@ -297,38 +298,51 @@ public class IMGradientCircleActivityIndicator: IMHalfCircleActivityIndicator {
     }
 }
 
-/// 脉冲样式指示器
-public class IMPulseActivityIndicator: IMBaseActivityIndicator {
+/// A pulse style activity indicator that shows that a task is in progress HUD.
+class PulseActivityIndicator: BaseActivityIndicator {
     
-    /// 私有常量数据
     private struct ViewMetrics {
-        static let count: Int = 3
+        
+        static var count: Int {
+            3
+        }
+    }
+        
+    /// The point spacing
+    var spacing: CGFloat = 6.0
+    
+    var layers: [CAShapeLayer] = []
+    
+    required init() {
+        super.init()
+        duration = 1.25
     }
     
-    /// 动画时长，默认`1.25s`
-    public var duration: TimeInterval = 1.25
-
-    /// 绘制颜色，默认`UIColor.white`
-    public var color: UIColor = .white
+    override var color: UIColor {
+        didSet {
+            layers.forEach({
+                $0.fillColor = color.cgColor
+            })
+        }
+    }
     
-    /// 点间距，默认`5.0`
-    public var spacing: CGFloat = 5.0
-    
-    private var layers: [CAShapeLayer] = []
-    
-    /// 活动指示器内容显示在容器视图中
-    public override func apply(in containerView: UIView) {
+    override func apply(in containerView: UIView) {
         let containerSize = containerView.systemLayoutSizeFitting(UIScreen.main.bounds.size)
         let radius = (containerSize.width - spacing * CGFloat(ViewMetrics.count - 1)) / CGFloat(ViewMetrics.count)
-        let path = UIBezierPath(arcCenter: CGPoint(x: radius * 0.5, y: radius * 0.5),
-                                radius: radius * 0.5,
-                                startAngle: -0.5 * .pi,
-                                endAngle: 1.5 * .pi,
-                                clockwise: true)
+        let path = UIBezierPath(
+            arcCenter: CGPoint(x: radius * 0.5, y: radius * 0.5),
+            radius: radius * 0.5,
+            startAngle: -0.5 * .pi,
+            endAngle: 1.5 * .pi,
+            clockwise: true
+        )
  
         let animation = CAKeyframeAnimation(keyPath: "transform.scale")
         animation.keyTimes = [0.0, 0.5, 1.0]
-        animation.timingFunctions = [CAMediaTimingFunction(controlPoints: 0.2, 0.68, 0.18, 1.08), CAMediaTimingFunction(controlPoints: 0.2, 0.68, 0.18, 1.08)]
+        animation.timingFunctions = [
+            CAMediaTimingFunction(controlPoints: 0.2, 0.68, 0.18, 1.08),
+            CAMediaTimingFunction(controlPoints: 0.2, 0.68, 0.18, 1.08)
+        ]
         animation.values = [1.0, 0.45, 1.0]
         animation.duration = duration
         animation.repeatCount = .infinity
@@ -338,7 +352,12 @@ public class IMPulseActivityIndicator: IMBaseActivityIndicator {
         let beginTimes = [0.36, 0.24, 0.12]
         for index in 0..<ViewMetrics.count {
             let layer = CAShapeLayer()
-            layer.frame = CGRect(x: (radius + spacing) * CGFloat(index), y: (containerSize.height - radius) * 0.5, width: radius, height: radius)
+            layer.frame = CGRect(
+                x: (radius + spacing) * CGFloat(index),
+                y: (containerSize.height - radius) * 0.5,
+                width: radius,
+                height: radius
+            )
             layer.path = path.cgPath
             layer.fillColor = color.cgColor
             animation.beginTime = beginTime - beginTimes[index]
@@ -348,8 +367,7 @@ public class IMPulseActivityIndicator: IMBaseActivityIndicator {
         }
     }
     
-    /// 移除活动指示器
-    public override func remove() {
+    override func remove() {
         layers.forEach({
             $0.removeFromSuperlayer()
         })
@@ -357,23 +375,15 @@ public class IMPulseActivityIndicator: IMBaseActivityIndicator {
     }
 }
 
-/// 不对称fade圆环样式指示器
-public class IMAsymmetricFadeCircleActivityIndicator: IMBaseActivityIndicator {
-    
-    /// 动画时长，默认`1.25s`
-    public var duration: TimeInterval = 1.25
-
-    /// 绘制颜色，默认`UIColor.white`
-    public var color: UIColor = .white
-    
-    /// 点间距，默认`3.0`
-    public var spacing: CGFloat = 3.0
-    
-    private var layers: [CAShapeLayer] = []
+/// An asymmetric fade style activity indicator that shows that a task is in progress HUD.
+class AsymmetricFadeCircleActivityIndicator: PulseActivityIndicator {
+     
+    required init() {
+        super.init()
+        spacing = 3.0
+    }
    
-    /// 活动指示器内容显示在容器视图中
-    public override func apply(in containerView: UIView) {
-        super.apply(in: containerView)
+    override func apply(in containerView: UIView) {
         let containerSize = containerView.systemLayoutSizeFitting(UIScreen.main.bounds.size)
 
         let animation = CAAnimationGroup()
@@ -396,10 +406,12 @@ public class IMAsymmetricFadeCircleActivityIndicator: IMBaseActivityIndicator {
         }()]
 
         let radius = (containerSize.width - 4 * spacing) / 3.5
-        let path = UIBezierPath(arcCenter: CGPoint(x: radius * 0.5, y: radius * 0.5),
-                                radius: radius * 0.5,
-                                startAngle: 0, endAngle: 2 * .pi,
-                                clockwise: false)
+        let path = UIBezierPath(
+            arcCenter: CGPoint(x: radius * 0.5, y: radius * 0.5),
+            radius: radius * 0.5,
+            startAngle: 0, endAngle: 2 * .pi,
+            clockwise: false
+        )
         let beginTime = CACurrentMediaTime()
         let beginTimes: [CFTimeInterval] = [0.84, 0.72, 0.6, 0.48, 0.36, 0.24, 0.12, 0]
         let radiusX = (containerSize.width - radius) * 0.5
@@ -415,13 +427,5 @@ public class IMAsymmetricFadeCircleActivityIndicator: IMBaseActivityIndicator {
             containerView.layer.addSublayer(layer)
             layers.append(layer)
         }
-    }
-    
-    /// 移除活动指示器
-    public override func remove() {
-        layers.forEach({
-            $0.removeFromSuperlayer()
-        })
-        layers.removeAll()
     }
 }

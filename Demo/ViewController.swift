@@ -39,20 +39,25 @@ class ViewController: UIViewController {
             }),
             CellModel(name: "Short Toast - Custom style", selectHandler: {
                 let hud = IMProgressHUD()
-                hud.location = .top(offset: 12.0)
-                hud.configuration.contentInsets = .init(top: 12.0, left: 12.0, bottom: 12.0, right: 12.0)
+                hud.configuration.isUserInteractionEnabled = false
+                hud.configuration.dimmingColor = UIColor.black.withAlphaComponent(0.8)
+                hud.configuration.backgroundEffect = UIBlurEffect(style: .prominent)
+                hud.location = .top
+                hud.configuration.contentInsets = .init(top: 8.0, left: 12.0, bottom: 8.0, right: 12.0)
                 hud.configuration.cornerRadius = 8.0
                 hud.configuration.numberOfMessageLines = 1
+                hud.configuration.messageColor = .black
                 hud.message = "IMProgressHUD Toast."
-                hud.show(in: UIApplication.shared.keyWindow!)
+                hud.show()
             }),
             CellModel(name: "Long Toast - Custom style", selectHandler: {
                 let hud = IMProgressHUD()
-                hud.location = .bottom(offset: 12.0)
-                hud.configuration.contentInsets = .init(top: 12.0, left: 12.0, bottom: 12.0, right: 12.0)
+                hud.configuration.isUserInteractionEnabled = false
+                hud.location = .bottom
+                hud.configuration.contentInsets = .init(top: 8.0, left: 12.0, bottom: 8.0, right: 12.0)
                 hud.configuration.cornerRadius = 8.0
                 hud.message = "IMProgressHUD Toast. long long long long long long long long long long long long long long long long long long."
-                hud.show(in: UIApplication.shared.keyWindow!)
+                hud.show()
             })
         ]),
         SectionModel(name: "Success", models: [
@@ -66,7 +71,10 @@ class ViewController: UIViewController {
                 IMProgressHUD.showFail()
             }),
             CellModel(name: "Fail - Short message", selectHandler: {
-                IMProgressHUD.showFail("Fail")
+                IMProgressHUD.showFail("Failure.")
+            }),
+            CellModel(name: "Image", selectHandler: {
+                IMProgressHUD.show(message: "Image.", image: UIImage(named: "icon.emoji"))
             })
         ]),
         SectionModel(name: "Indicator", models: [
@@ -88,13 +96,65 @@ class ViewController: UIViewController {
             CellModel(name: "Pulse", selectHandler: {
                 IMProgressHUD.showIndicator(.pulse, message: "Loading")
             })
-        ]), SectionModel(name: "Progress", models: [
+        ]),
+        SectionModel(name: "Progress", models: [
             CellModel(name: "Default", selectHandler: {
                 showProgress(0.0, indicatorType: .default)
             }),
             CellModel(name: "Half Circle", selectHandler: {
                 showProgress(0.0, indicatorType: .halfCircle)
             }),
+        ]),
+        SectionModel(name: "Other", models: [
+            CellModel(name: "Indicator", selectHandler: {
+                let hud = IMProgressHUD()
+                hud.configuration.isUserInteractionEnabled = false
+                hud.configuration.contentInsets = .init(top: 8.0, left: 12.0, bottom: 8.0, right: 12.0)
+                hud.configuration.cornerRadius = 8.0
+                hud.configuration.indicatorSize = CGSize(width: 18.0, height: 18.0)
+                hud.configuration.lineWidth = 2.0
+                hud.axis = .horizontal
+                hud.message = "Loading..."
+                hud.setActivity(.default)
+                hud.show()
+                hud.hideAfterDelay(3.0)
+            }),
+            CellModel(name: "Success", selectHandler: {
+                let hud = IMProgressHUD()
+                hud.configuration.isUserInteractionEnabled = false
+                hud.configuration.contentInsets = .init(top: 8.0, left: 12.0, bottom: 8.0, right: 12.0)
+                hud.configuration.cornerRadius = 8.0
+                hud.configuration.indicatorSize = CGSize(width: 18.0, height: 18.0)
+                hud.configuration.lineWidth = 2.0
+                hud.axis = .horizontal
+                hud.message = "Finished successful."
+                hud.setState(.success)
+                hud.show()
+            }),
+            CellModel(name: "Image", selectHandler: {
+                let hud = IMProgressHUD()
+                hud.configuration.isUserInteractionEnabled = false
+                hud.configuration.contentInsets = .init(top: 8.0, left: 12.0, bottom: 8.0, right: 12.0)
+                hud.configuration.cornerRadius = 8.0
+                hud.configuration.indicatorSize = CGSize(width: 18.0, height: 18.0)
+                hud.axis = .horizontal
+                hud.message = "Smiling"
+                hud.icon = UIImage(named: "icon.emoji.smile")
+                hud.show()
+            }),
+            CellModel(name: "Toast", selectHandler: {
+                let hud = IMProgressHUD()
+                hud.configuration.isUserInteractionEnabled = false
+                hud.configuration.contentInsets = .init(top: 8.0, left: 12.0, bottom: 8.0, right: 12.0)
+                hud.configuration.cornerRadius = 3.0
+                hud.configuration.maxWidthPercentage = 0.95
+                hud.configuration.messageAlignment = .left
+                hud.location = .top(offset: 0)
+                hud.axis = .horizontal
+                hud.message = "Emoji"
+                hud.icon = UIImage(named: "icon.emoji")
+                hud.show()
+            })
         ])
     ]
 
@@ -131,13 +191,13 @@ class ViewController: UIViewController {
                 $0.invalidate()
             }
         }
-        timer.fire()
+        RunLoop.main.add(timer, forMode: .common)
         Self.timer = timer
     }
     
     @objc func didDismissHUD() {
         Self.invalidateProgressHUD()
-        IMProgressHUD.dismiss()
+        IMProgressHUD.hide()
     }
 }
 
