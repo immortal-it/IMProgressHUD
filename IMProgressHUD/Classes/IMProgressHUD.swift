@@ -659,17 +659,23 @@ public extension IMProgressHUD {
         /// A system style activity indicator.
         case system = "System"
         
+        
         /// A circle style activity indicator.
         case circle = "Circle"
+                
+        /// An imperfect circle style activity indicator.
+        case imperfectCircle = "ImperfectCircle"
         
         /// An half circle style activity indicator.
         case halfCircle = "HalfCircle"
         
-        /// A pulse style activity indicator.
-        case pulse = "Pulse"
-        
         /// A asymmetric fade style activity indicator.
         case asymmetricFadeCircle = "AsymmetricFadeCircle"
+        
+        
+        /// A pulse style activity indicator.
+        case pulse = "Pulse"
+
 
         fileprivate func getIndicator() -> BaseActivityIndicator? {
             return BaseActivityIndicator.asIndicator("\(rawValue)ActivityIndicator")

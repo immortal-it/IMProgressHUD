@@ -134,9 +134,13 @@ class ActivityIndicatorLayer: BaseActivityIndicator {
      func loadAnimations() { }
 }
 
+
+
+// MARK: - Circle
+
 /// A circle style activity indicator that shows that a task is in progress HUD.
 class CircleActivityIndicator: ActivityIndicatorLayer {
-    
+
     override func apply(in containerView: UIView) {
         super.apply(in: containerView)
         let containerSize = containerView.systemLayoutSizeFitting(UIScreen.main.bounds.size)
@@ -149,7 +153,7 @@ class CircleActivityIndicator: ActivityIndicatorLayer {
         )
         layer.path = path.cgPath
     }
-    
+
     override func loadAnimations() {
         let animationRotation = CABasicAnimation(keyPath: "transform.rotation")
         animationRotation.byValue = 2.0 * Float.pi
@@ -170,6 +174,46 @@ class CircleActivityIndicator: ActivityIndicatorLayer {
 
         let groupAnimation = CAAnimationGroup()
         groupAnimation.animations = [animationRotation, animationStop, animationStart]
+        groupAnimation.duration = duration
+        groupAnimation.repeatCount = .infinity
+        groupAnimation.isRemovedOnCompletion = false
+        groupAnimation.fillMode = .forwards
+
+        layer.add(groupAnimation, forKey: "animation")
+    }
+}
+
+/// A imperfect circle style activity indicator that shows that a task is in progress HUD.
+class ImperfectCircleActivityIndicator: ActivityIndicatorLayer {
+
+    required init() {
+        super.init()
+        duration = 1.0
+    }
+    
+    override func apply(in containerView: UIView) {
+        super.apply(in: containerView)
+        let containerSize = containerView.systemLayoutSizeFitting(UIScreen.main.bounds.size)
+        let path = UIBezierPath(
+            arcCenter: CGPoint(x: containerSize.width * 0.5, y: containerSize.height * 0.5),
+            radius: (min(containerSize.height, containerSize.width) - lineWidth) * 0.5,
+            startAngle: -0.5 * .pi,
+            endAngle: 1.5 * .pi,
+            clockwise: true
+        )
+        layer.path = path.cgPath
+        
+        layer.strokeStart = 0
+        layer.strokeEnd = 0.82
+    }
+
+    override func loadAnimations() {
+        let animationRotation = CABasicAnimation(keyPath: "transform.rotation")
+        animationRotation.byValue = 2.0 * Float.pi
+        animationRotation.timingFunction = CAMediaTimingFunction(name: .linear)
+
+        let groupAnimation = CAAnimationGroup()
+        groupAnimation.animations = [animationRotation]
         groupAnimation.duration = duration
         groupAnimation.repeatCount = .infinity
         groupAnimation.isRemovedOnCompletion = false
@@ -298,6 +342,65 @@ class GradientCircleActivityIndicator: HalfCircleActivityIndicator {
     }
 }
 
+/// An asymmetric fade style activity indicator that shows that a task is in progress HUD.
+class AsymmetricFadeCircleActivityIndicator: PulseActivityIndicator {
+     
+    required init() {
+        super.init()
+        spacing = 3.0
+    }
+   
+    override func apply(in containerView: UIView) {
+        let containerSize = containerView.systemLayoutSizeFitting(UIScreen.main.bounds.size)
+
+        let animation = CAAnimationGroup()
+        animation.timingFunction = CAMediaTimingFunction(name: .linear)
+        animation.duration = duration
+        animation.repeatCount = .infinity
+        animation.isRemovedOnCompletion = false
+        animation.animations = [{
+            let animationScale = CAKeyframeAnimation(keyPath: "transform.scale")
+            animationScale.keyTimes = [0, 0.5, 1]
+            animationScale.values = [1, 0.4, 1]
+            animationScale.duration = duration
+            return animationScale
+        }(), {
+            let animationOpacity = CAKeyframeAnimation(keyPath: "opacity")
+            animationOpacity.keyTimes = [0, 0.5, 1]
+            animationOpacity.values = [1, 0.3, 1]
+            animationOpacity.duration = duration
+            return animationOpacity
+        }()]
+
+        let radius = (containerSize.width - 4 * spacing) / 3.5
+        let path = UIBezierPath(
+            arcCenter: CGPoint(x: radius * 0.5, y: radius * 0.5),
+            radius: radius * 0.5,
+            startAngle: 0, endAngle: 2 * .pi,
+            clockwise: false
+        )
+        let beginTime = CACurrentMediaTime()
+        let beginTimes: [CFTimeInterval] = [0.84, 0.72, 0.6, 0.48, 0.36, 0.24, 0.12, 0]
+        let radiusX = (containerSize.width - radius) * 0.5
+        for index in 0..<8 {
+            let angle = CGFloat.pi / 4 * CGFloat(index)
+            let layer = CAShapeLayer()
+            layer.path = path.cgPath
+            layer.fillColor = color.cgColor
+            layer.backgroundColor = nil
+            layer.frame = CGRect(x: radiusX * (cos(angle) + 1), y: radiusX * (sin(angle) + 1), width: radius, height: radius)
+            animation.beginTime = beginTime - beginTimes[index]
+            layer.add(animation, forKey: "animation")
+            containerView.layer.addSublayer(layer)
+            layers.append(layer)
+        }
+    }
+}
+
+
+
+// MARK: - Other
+
 /// A pulse style activity indicator that shows that a task is in progress HUD.
 class PulseActivityIndicator: BaseActivityIndicator {
     
@@ -372,60 +475,5 @@ class PulseActivityIndicator: BaseActivityIndicator {
             $0.removeFromSuperlayer()
         })
         layers.removeAll()
-    }
-}
-
-/// An asymmetric fade style activity indicator that shows that a task is in progress HUD.
-class AsymmetricFadeCircleActivityIndicator: PulseActivityIndicator {
-     
-    required init() {
-        super.init()
-        spacing = 3.0
-    }
-   
-    override func apply(in containerView: UIView) {
-        let containerSize = containerView.systemLayoutSizeFitting(UIScreen.main.bounds.size)
-
-        let animation = CAAnimationGroup()
-        animation.timingFunction = CAMediaTimingFunction(name: .linear)
-        animation.duration = duration
-        animation.repeatCount = .infinity
-        animation.isRemovedOnCompletion = false
-        animation.animations = [{
-            let animationScale = CAKeyframeAnimation(keyPath: "transform.scale")
-            animationScale.keyTimes = [0, 0.5, 1]
-            animationScale.values = [1, 0.4, 1]
-            animationScale.duration = duration
-            return animationScale
-        }(), {
-            let animationOpacity = CAKeyframeAnimation(keyPath: "opacity")
-            animationOpacity.keyTimes = [0, 0.5, 1]
-            animationOpacity.values = [1, 0.3, 1]
-            animationOpacity.duration = duration
-            return animationOpacity
-        }()]
-
-        let radius = (containerSize.width - 4 * spacing) / 3.5
-        let path = UIBezierPath(
-            arcCenter: CGPoint(x: radius * 0.5, y: radius * 0.5),
-            radius: radius * 0.5,
-            startAngle: 0, endAngle: 2 * .pi,
-            clockwise: false
-        )
-        let beginTime = CACurrentMediaTime()
-        let beginTimes: [CFTimeInterval] = [0.84, 0.72, 0.6, 0.48, 0.36, 0.24, 0.12, 0]
-        let radiusX = (containerSize.width - radius) * 0.5
-        for index in 0..<8 {
-            let angle = CGFloat.pi / 4 * CGFloat(index)
-            let layer = CAShapeLayer()
-            layer.path = path.cgPath
-            layer.fillColor = color.cgColor
-            layer.backgroundColor = nil
-            layer.frame = CGRect(x: radiusX * (cos(angle) + 1), y: radiusX * (sin(angle) + 1), width: radius, height: radius)
-            animation.beginTime = beginTime - beginTimes[index]
-            layer.add(animation, forKey: "animation")
-            containerView.layer.addSublayer(layer)
-            layers.append(layer)
-        }
     }
 }

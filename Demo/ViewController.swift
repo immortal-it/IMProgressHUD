@@ -87,6 +87,9 @@ class ViewController: UIViewController {
             CellModel(name: "Circle", selectHandler: {
                 IMProgressHUD.showIndicator(.circle, message: "Loading")
             }),
+            CellModel(name: "Imperfect Circle", selectHandler: {
+                IMProgressHUD.showIndicator(.imperfectCircle, message: "Loading")
+            }),
             CellModel(name: "Half Circle", selectHandler: {
                 IMProgressHUD.showIndicator(.halfCircle, message: "Loading")
             }),
