@@ -9,7 +9,13 @@ import UIKit
 
 /// A protocol for progress HUD's transition.
 public protocol IMAnimatorTransitioning {
-    
+        
+    /// Presenting a progress HUD.
+    func isAppearing(hud: IMProgressHUD) -> Bool
+
+    /// Hiding a progress HUD.
+    func isDisappearing(hud: IMProgressHUD) -> Bool
+
     /// Presents a progress HUD.
     func show(hud: IMProgressHUD)
     
@@ -20,25 +26,33 @@ public protocol IMAnimatorTransitioning {
     func cancel(hud: IMProgressHUD)
 }
 
-class FadeAnimator: IMAnimatorTransitioning {
-
-    private struct ViewMetrics {
-
-        static var showAnimationKey: String {
-            "com.immortal.FadeTransition.show"
-        }
-
-        static var hideAnimationKey: String {
-            "com.immortal.FadeTransition.hide"
-        }
-
-        static var duration: TimeInterval {
-            0.15
-        }
+public extension IMAnimatorTransitioning {
+    
+    func isAppearing(hud: IMProgressHUD) -> Bool {
+        hud.layer.animation(forKey: ViewMetrics.showAnimationKey) != nil
     }
 
+    func isDisappearing(hud: IMProgressHUD) -> Bool {
+        hud.layer.animation(forKey: ViewMetrics.hideAnimationKey) != nil
+    }
+}
+
+
+private struct ViewMetrics {
+
+    static var showAnimationKey: String { "com.immortal.IMProgressHUD.Animator.show" }
+
+    static var hideAnimationKey: String { "com.immortal.IMProgressHUD.Animator.hide" }
+
+    static var duration: TimeInterval { 0.15 }
+}
+
+
+
+class FadeAnimator: IMAnimatorTransitioning {
+
     func show(hud: IMProgressHUD) {
-        guard hud.layer.animation(forKey: ViewMetrics.showAnimationKey) == nil else {
+        guard !isAppearing(hud: hud) else {
             return
         }
         let animation = CABasicAnimation(keyPath: "opacity")
@@ -51,7 +65,7 @@ class FadeAnimator: IMAnimatorTransitioning {
     }
 
     func hide(hud: IMProgressHUD) {
-        guard hud.layer.animation(forKey: ViewMetrics.hideAnimationKey) == nil else {
+        guard !isDisappearing(hud: hud) else {
             return
         }
         let animation = CABasicAnimation(keyPath: "opacity")
@@ -73,30 +87,18 @@ class FadeAnimator: IMAnimatorTransitioning {
 
     func cancel(hud: IMProgressHUD) {
         hud.layer.removeAnimation(forKey: ViewMetrics.showAnimationKey)
-        hud.layer.removeAnimation(forKey: ViewMetrics.hideAnimationKey)
+        if let animation = hud.layer.animation(forKey: ViewMetrics.hideAnimationKey) {
+            animation.completion = nil
+            hud.layer.removeAnimation(forKey: ViewMetrics.hideAnimationKey)
+        }
         hud.layer.opacity = 1.0
     }
 }
 
 class ZoomAnimator: IMAnimatorTransitioning {
     
-    private struct ViewMetrics {
-        
-        static var showAnimationKey: String {
-            "com.immortal.FadeTransition.show"
-        }
-        
-        static var hideAnimationKey: String {
-            "com.immortal.FadeTransition.hide"
-        }
-        
-        static var duration: TimeInterval {
-            0.15
-        }
-    }
-    
     func show(hud: IMProgressHUD) {
-        guard hud.layer.animation(forKey: ViewMetrics.showAnimationKey) == nil else {
+        guard !isAppearing(hud: hud) else {
             return
         }
         let opacityAnimation = CABasicAnimation(keyPath: "opacity")
@@ -117,7 +119,7 @@ class ZoomAnimator: IMAnimatorTransitioning {
     }
 
     func hide(hud: IMProgressHUD) {
-        guard hud.layer.animation(forKey: ViewMetrics.hideAnimationKey) == nil else {
+        guard !isDisappearing(hud: hud) else {
             return
         }
         let opacityAnimation = CABasicAnimation(keyPath: "opacity")
@@ -149,30 +151,19 @@ class ZoomAnimator: IMAnimatorTransitioning {
     
     func cancel(hud: IMProgressHUD) {
         hud.layer.removeAnimation(forKey: ViewMetrics.showAnimationKey)
-        hud.layer.removeAnimation(forKey: ViewMetrics.hideAnimationKey)
+        if let animation = hud.layer.animation(forKey: ViewMetrics.hideAnimationKey) {
+            animation.completion = nil
+            hud.layer.removeAnimation(forKey: ViewMetrics.hideAnimationKey)
+        }
+        hud.layer.opacity = 1.0
+        
         hud.containerView.layer.removeAnimation(forKey: ViewMetrics.showAnimationKey)
         hud.containerView.layer.removeAnimation(forKey: ViewMetrics.hideAnimationKey)
-        hud.layer.opacity = 1.0
-        hud.layer.setAffineTransform(.identity)
+        hud.containerView.layer.setAffineTransform(.identity)
     }
 }
 
 class TranslationZoomAnimator: IMAnimatorTransitioning {
-    
-    private struct ViewMetrics {
-        
-        static var showAnimationKey: String {
-            "com.immortal.FadeTransition.show"
-        }
-        
-        static var hideAnimationKey: String {
-            "com.immortal.FadeTransition.hide"
-        }
-        
-        static var duration: TimeInterval {
-            0.15
-        }
-    }
     
     let translation: CGPoint
     
@@ -181,7 +172,7 @@ class TranslationZoomAnimator: IMAnimatorTransitioning {
     }
      
     func show(hud: IMProgressHUD) {
-        guard hud.layer.animation(forKey: ViewMetrics.showAnimationKey) == nil else {
+        guard !isAppearing(hud: hud) else {
             return
         }
         let opacityAnimation = CABasicAnimation(keyPath: "opacity")
@@ -214,7 +205,7 @@ class TranslationZoomAnimator: IMAnimatorTransitioning {
     }
 
     func hide(hud: IMProgressHUD) {
-        guard hud.layer.animation(forKey: ViewMetrics.hideAnimationKey) == nil else {
+        guard !isDisappearing(hud: hud) else {
             return
         }
         let opacityAnimation = CABasicAnimation(keyPath: "opacity")
@@ -258,33 +249,22 @@ class TranslationZoomAnimator: IMAnimatorTransitioning {
     
     func cancel(hud: IMProgressHUD) {
         hud.layer.removeAnimation(forKey: ViewMetrics.showAnimationKey)
-        hud.layer.removeAnimation(forKey: ViewMetrics.hideAnimationKey)
+        if let animation = hud.layer.animation(forKey: ViewMetrics.hideAnimationKey) {
+            animation.completion = nil
+            hud.layer.removeAnimation(forKey: ViewMetrics.hideAnimationKey)
+        }
+        hud.layer.opacity = 1.0
+        
         hud.containerView.layer.removeAnimation(forKey: ViewMetrics.showAnimationKey)
         hud.containerView.layer.removeAnimation(forKey: ViewMetrics.hideAnimationKey)
-        hud.layer.opacity = 1.0
-        hud.layer.setAffineTransform(.identity)
+        hud.containerView.layer.setAffineTransform(.identity)
     }
 }
 
 class PopoverAnimator: IMAnimatorTransitioning {
     
-    private struct ViewMetrics {
-        
-        static var showAnimationKey: String {
-            "com.immortal.FadeTransition.show"
-        }
-        
-        static var hideAnimationKey: String {
-            "com.immortal.FadeTransition.hide"
-        }
-        
-        static var duration: TimeInterval {
-            0.15
-        }
-    }
-    
     func show(hud: IMProgressHUD) {
-        guard hud.layer.animation(forKey: ViewMetrics.showAnimationKey) == nil else {
+        guard !isAppearing(hud: hud) else {
             return
         }
         hud.layoutIfNeeded()
@@ -314,7 +294,7 @@ class PopoverAnimator: IMAnimatorTransitioning {
     }
 
     func hide(hud: IMProgressHUD) {
-        guard hud.layer.animation(forKey: ViewMetrics.hideAnimationKey) == nil else {
+        guard !isDisappearing(hud: hud) else {
             return
         }
         let opacityAnimation = CABasicAnimation(keyPath: "opacity")
@@ -353,10 +333,14 @@ class PopoverAnimator: IMAnimatorTransitioning {
     
     func cancel(hud: IMProgressHUD) {
         hud.layer.removeAnimation(forKey: ViewMetrics.showAnimationKey)
-        hud.layer.removeAnimation(forKey: ViewMetrics.hideAnimationKey)
+        if let animation = hud.layer.animation(forKey: ViewMetrics.hideAnimationKey) {
+            animation.completion = nil
+            hud.layer.removeAnimation(forKey: ViewMetrics.hideAnimationKey)
+        }
+        hud.layer.opacity = 1.0
+
         hud.containerView.layer.removeAnimation(forKey: ViewMetrics.showAnimationKey)
         hud.containerView.layer.removeAnimation(forKey: ViewMetrics.hideAnimationKey)
-        hud.layer.opacity = 1.0
-        hud.layer.setAffineTransform(.identity)
+        hud.containerView.layer.setAffineTransform(.identity)
     }
 }

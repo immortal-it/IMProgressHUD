@@ -10,21 +10,13 @@ import UIKit
 extension UIView {
     
     /// A layout anchor representing the top edge of the view’s frame.
-    var compatibleSafeTopAnchor: NSLayoutYAxisAnchor {
-        if #available(iOS 11.0, *) {
-            return safeAreaLayoutGuide.topAnchor
-        } else {
-            return topAnchor
-        }
+    var safeTopAnchor: NSLayoutYAxisAnchor {
+        safeAreaLayoutGuide.topAnchor
     }
     
     /// A layout anchor representing the bottom edge of the view’s frame.
-    var compatibleSafeBottomAnchor: NSLayoutYAxisAnchor {
-        if #available(iOS 11.0, *) {
-            return safeAreaLayoutGuide.bottomAnchor
-        } else {
-            return bottomAnchor
-        }
+    var safeBottomAnchor: NSLayoutYAxisAnchor {
+        safeAreaLayoutGuide.bottomAnchor
     }
     
     /// Adds a view to the end of the receiver’s list of subviews.

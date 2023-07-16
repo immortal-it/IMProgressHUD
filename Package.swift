@@ -26,7 +26,7 @@ import PackageDescription
 
 let package = Package(
     name: "IMProgressHUD",
-    platforms: [.iOS(.v10)],
+    platforms: [.iOS(.v11)],
     products: [.library(name: "IMProgressHUD", targets: ["IMProgressHUD"])],
     targets: [.target(name: "IMProgressHUD", path: "IMProgressHUD")],
     swiftLanguageVersions: [.v5]

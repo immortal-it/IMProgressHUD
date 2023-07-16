@@ -29,6 +29,7 @@ open class IMProgressHUD: UIView {
         case custom(IMAnimatorTransitioning)
     }
       
+    /// Keys that specify a horizontal or vertical layout constraint between objects.
     public typealias Axis = NSLayoutConstraint.Axis
     
     /// The configuration you specify when creating the HUD.
@@ -40,21 +41,17 @@ open class IMProgressHUD: UIView {
     
     private let identifier = "com.immortal.IMProgressHUD"
 
-    /// Initializes.
-    public init() {
-        super.init(frame: UIScreen.main.bounds)
-        initView()
-        setupSubviews()
-        configure()
-    }
-        
     /// Creates a new progress HUD with the configuration you specify.
     ///
     /// - Parameters:
-    ///  - configuration: The configuration with which to initialize the progress HUD.
-    public convenience init(configuration: Configuration) {
-        self.init()
+    ///   - configuration: The configuration with which to initialize the progress HUD. The defualt value is `IMProgressHUD.configuration`.
+    public init(_ configuration: Configuration = IMProgressHUD.configuration) {
         self.configuration = configuration
+        super.init(frame: UIScreen.main.bounds)
+        
+        initView()
+        setupSubviews()
+        configure()
     }
     
     public required init?(coder: NSCoder) {
@@ -67,16 +64,10 @@ open class IMProgressHUD: UIView {
     
     private func configure() {
         isUserInteractionEnabled = !configuration.isUserInteractionEnabled
-        dimmingView.backgroundColor = configuration.dimmingColor
-        dimmingView.isHidden = configuration.dimmingColor == nil
-
-        if let effect = configuration.backgroundEffect {
-            containerView.effect = effect
-            containerView.backgroundColor = nil
-        } else {
-            containerView.effect = nil
-            containerView.backgroundColor = configuration.backgroundColor
-        }
+        backgroundColor = configuration.dimmingColor
+        
+        containerView.effect = configuration.backgroundEffect
+        containerView.backgroundColor = configuration.backgroundColor
         containerView.layer.cornerRadius = configuration.cornerRadius
         containerView.layer.masksToBounds = configuration.cornerRadius > 0
         
@@ -86,6 +77,13 @@ open class IMProgressHUD: UIView {
         if let activityIndicator = activityIndicator as? BaseActivityIndicator {
             activityIndicator.color = configuration.indicatorColor
             activityIndicator.lineWidth = configuration.lineWidth
+        }
+        
+        // Keep meesage label lazy.
+        if let messageLabel = contentStackView.arrangedSubviews.compactMap({ $0 as? UILabel }).first {
+            messageLabel.font = configuration.messageFont
+            messageLabel.textColor = configuration.messageColor
+            messageLabel.textAlignment = configuration.messageAlignment
         }
         
         updateAligningIfNeeded()
@@ -101,19 +99,17 @@ open class IMProgressHUD: UIView {
     
     
      
-    // MARK: - UIView
+    // MARK: - View
     
-    let containerView: UIVisualEffectView = createContainerView()
+    let containerView = makeContainerView()
     
-    private let dimmingView = UIView()
-
-    private let contentStackView = createContentStackView()
+    private let contentStackView = makeContentStackView()
     
-    private lazy var messageLabel = createMessageLabel()
+    private lazy var messageLabel = makeMessageLabel()
 
-    private lazy var indicatorContainerView = createIconView()
+    private lazy var indicatorContainerView = makeIconView()
 
-    private var indicatorInternalConstraints: [NSLayoutConstraint] = []
+    private var indicatorConstraints: [NSLayoutConstraint] = []
 
     private func initView() {
         accessibilityIdentifier = identifier
@@ -121,43 +117,39 @@ open class IMProgressHUD: UIView {
         autoresizingMask = [.flexibleWidth, .flexibleHeight]
     }
 
-    private var contentStackViewTrailingConstraint: NSLayoutConstraint?
+    private var contentStackViewFixedTrailingConstraint: NSLayoutConstraint?
     
     private func setupSubviews() {
-        addSubviewLayoutEqualToEdges(dimmingView)
-        contentStackViewTrailingConstraint = contentStackView.trailingAnchor.constraint(equalTo: containerView.contentView.trailingAnchor)
         containerView.contentView.addSubview(
             contentStackView,
             constraints:
                 contentStackView.leadingAnchor.constraint(equalTo: containerView.contentView.leadingAnchor),
-                contentStackViewTrailingConstraint!,
+                contentStackView.trailingAnchor.constraint(lessThanOrEqualTo: containerView.contentView.trailingAnchor).priority(.defaultLow),
                 contentStackView.topAnchor.constraint(equalTo: containerView.contentView.topAnchor),
                 contentStackView.bottomAnchor.constraint(equalTo: containerView.contentView.bottomAnchor)
         )
+        contentStackViewFixedTrailingConstraint = contentStackView.trailingAnchor
+            .constraint(equalTo: containerView.contentView.trailingAnchor)
+            .priority(.defaultHigh)
+            .active(true)
+        
         addSubview(containerView)
         updateContainerViewConstraints()
         updateAligningIfNeeded()
     }
     
     private func updateIndicatorContainerViewConstraints() {
-        indicatorContainerView.removeConstraints(indicatorInternalConstraints)
-        indicatorInternalConstraints = [
-            indicatorContainerView.widthAnchor.constraint(equalToConstant: configuration.indicatorSize.width),
-            indicatorContainerView.heightAnchor.constraint(equalToConstant: configuration.indicatorSize.height)
+        indicatorContainerView.removeConstraints(indicatorConstraints)
+        indicatorConstraints = [
+            indicatorContainerView.widthAnchor.constraint(equalToConstant: axis == .vertical ? configuration.indicatorSize.width : configuration.compactIndicatorSize.width),
+            indicatorContainerView.heightAnchor.constraint(equalToConstant: axis == .vertical ? configuration.indicatorSize.height : configuration.compactIndicatorSize.height)
         ]
-        NSLayoutConstraint.activate(indicatorInternalConstraints)
+        indicatorContainerView.addConstraints(indicatorConstraints)
         indicatorContainerView.setNeedsLayout()
     }
     
     private func updateAligningIfNeeded() {
-        guard let trailingConstraint = contentStackViewTrailingConstraint else {
-            return
-        }
-        trailingConstraint.isActive = false
-        containerView.contentView.removeConstraint(trailingConstraint)
-
-        contentStackViewTrailingConstraint = (configuration.messageAlignment == .left && axis == .horizontal) ? contentStackView.trailingAnchor.constraint(lessThanOrEqualTo: containerView.contentView.trailingAnchor) : contentStackView.trailingAnchor.constraint(equalTo: containerView.contentView.trailingAnchor)
-        contentStackViewTrailingConstraint?.isActive = true
+        contentStackViewFixedTrailingConstraint?.isActive = !(configuration.messageAlignment == .left && axis == .horizontal)
         
         if window != nil {
             containerView.contentView.layoutIfNeeded()
@@ -172,10 +164,20 @@ open class IMProgressHUD: UIView {
         animator = nil
     }
     
+    private func fixContentInsetIfNeeded() {
+        let views = contentStackView.arrangedSubviews.compactMap({ $0.isHidden ? nil : $0 })
+        let isCompact = (views.count == 1 && views[0] is UILabel) || axis == .horizontal
+         
+        contentStackView.layoutMargins = isCompact ? configuration.compactContentInsets : configuration.contentInsets
+        containerView.layer.cornerRadius = isCompact ? configuration.compactCornerRadius : configuration.cornerRadius
+        containerView.layer.masksToBounds = containerView.layer.cornerRadius > 0
+    }
+    
     
     
     // MARK: - Location
     
+    /// The location of the view's frame rectangle.
     open var location: Location = .default {
         didSet {
             guard oldValue != location else {
@@ -189,7 +191,7 @@ open class IMProgressHUD: UIView {
 
     private func updateContainerViewConstraints() {
         if !locationConstraints.isEmpty {
-            removeConstraints(locationConstraints)
+            NSLayoutConstraint.deactivate(locationConstraints)
         }
         locationConstraints = [
             containerView.widthAnchor
@@ -212,7 +214,7 @@ open class IMProgressHUD: UIView {
             case .top(offset: let offset):
                 locationConstraints.append(
                     containerView.topAnchor
-                        .constraint(equalTo: compatibleSafeTopAnchor, constant: offset)
+                        .constraint(equalTo: safeTopAnchor, constant: offset)
                 )
             case .center(offset: let offset):
                 locationConstraints.append(
@@ -221,7 +223,8 @@ open class IMProgressHUD: UIView {
                 )
             case .bottom(offset: let offset):
                 locationConstraints.append(
-                    compatibleSafeBottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: offset)
+                    containerView.bottomAnchor
+                        .constraint(equalTo: safeBottomAnchor, constant: -offset)
                 )
         }
         NSLayoutConstraint.activate(locationConstraints)
@@ -243,6 +246,9 @@ open class IMProgressHUD: UIView {
             contentStackView.axis
         }
         set {
+            guard contentStackView.axis != newValue else {
+                return
+            }
             contentStackView.axis = newValue
             updateAligningIfNeeded()
         }
@@ -254,20 +260,21 @@ open class IMProgressHUD: UIView {
             messageLabel.text
         }
         set {
-            messageLabel.text = newValue
-            
+            // Keep meesage label lazy.
+            if !contentStackView.arrangedSubviews.contains(messageLabel) {
+                contentStackView.addArrangedSubview(messageLabel)
+                messageLabel.font = configuration.messageFont
+                messageLabel.textColor = configuration.messageColor
+                messageLabel.textAlignment = configuration.messageAlignment
+            }
+
             let isHidden = newValue == nil
             if messageLabel.isHidden != isHidden {
                 messageLabel.isHidden = isHidden
             }
-            if !contentStackView.arrangedSubviews.contains(messageLabel) {
-                contentStackView.addArrangedSubview(messageLabel)
-            }
-            messageLabel.font = configuration.messageFont
-            messageLabel.textColor = configuration.messageColor
-            messageLabel.textAlignment = configuration.messageAlignment
-            messageLabel.numberOfLines = configuration.numberOfMessageLines
-
+            messageLabel.text = newValue
+            
+            fixContentInsetIfNeeded()
             hideIfNeeded()
         }
     }
@@ -278,18 +285,21 @@ open class IMProgressHUD: UIView {
             messageLabel.attributedText
         }
         set {
+            // Keep meesage label lazy.
+            if !contentStackView.arrangedSubviews.contains(messageLabel) {
+                contentStackView.addArrangedSubview(messageLabel)
+                messageLabel.font = configuration.messageFont
+                messageLabel.textColor = configuration.messageColor
+                messageLabel.textAlignment = configuration.messageAlignment
+            }
+            
             let isHidden = newValue == nil
             if messageLabel.isHidden != isHidden {
                 messageLabel.isHidden = isHidden
             }
-            messageLabel.font = configuration.messageFont
-            messageLabel.textColor = configuration.messageColor
-            messageLabel.textAlignment = configuration.messageAlignment
-            messageLabel.numberOfLines = configuration.numberOfMessageLines
             messageLabel.attributedText = newValue
-            if !contentStackView.arrangedSubviews.contains(messageLabel) {
-                contentStackView.addArrangedSubview(messageLabel)
-            }
+            
+            fixContentInsetIfNeeded()
             hideIfNeeded()
         }
     }
@@ -303,13 +313,16 @@ open class IMProgressHUD: UIView {
             }
         }
         didSet {
-            indicatorContainerView.image = icon
             if !contentStackView.arrangedSubviews.contains(indicatorContainerView) {
                 contentStackView.insertArrangedSubview(indicatorContainerView, at: 0)
             }
-            if indicatorContainerView.image != nil && !indicatorInternalConstraints.isEmpty {
-                indicatorContainerView.removeConstraints(indicatorInternalConstraints)
+            if icon != nil && !indicatorConstraints.isEmpty {
+                indicatorContainerView.removeConstraints(indicatorConstraints)
             }
+            
+            indicatorContainerView.image = icon
+
+            fixContentInsetIfNeeded()
             hideIfNeeded()
         }
     }
@@ -332,10 +345,12 @@ open class IMProgressHUD: UIView {
                 updateIndicatorContainerViewConstraints()
                 if let activityIndicator = activityIndicator as? BaseActivityIndicator {
                     activityIndicator.color = configuration.indicatorColor
-                    activityIndicator.lineWidth = configuration.lineWidth
+                    activityIndicator.lineWidth = axis == .vertical ? configuration.lineWidth : configuration.compactLineWidth
                 }
                 activityIndicator.apply(in: indicatorContainerView)
             }
+            
+            fixContentInsetIfNeeded()
             hideIfNeeded()
         }
     }
@@ -367,11 +382,13 @@ open class IMProgressHUD: UIView {
     ///    - transitionStyle: The transition style to use when presenting the `IMProgressHUD`.
     open func show(in windowView: UIView, transitionStyle: TransitionStyle = .default) {
         guard !windowView.subviews.contains(self) else {
+            hideIfNeeded()
             return
         }
         frame = windowView.bounds
         windowView.addSubview(self)
-       
+        hideIfNeeded()
+        
         guard animator == nil else {
             return
         }
@@ -400,7 +417,6 @@ open class IMProgressHUD: UIView {
         if let animator = animator {
             animator.show(hud: self)
         }
-        hideIfNeeded()
     }
     
     /// Presents the progress HUD in key window with a transition animation.
@@ -438,11 +454,8 @@ open class IMProgressHUD: UIView {
         if delay <= 0 {
             hide()
         } else {
-            Self.cancelPreviousPerformRequests(
-                withTarget: self,
-                selector: #selector(hide),
-                object: self
-            )
+            cancelHidePerformRequest()
+            
             perform(#selector(hide), with: self, afterDelay: delay, inModes: [.common])
         }
     }
@@ -450,40 +463,24 @@ open class IMProgressHUD: UIView {
     /// Hides if needed.
     private func hideIfNeeded() {
         if activityIndicator != nil && !(activityIndicator is StateIndicator) {
-            Self.cancelPreviousPerformRequests(
-                withTarget: self,
-                selector: #selector(hide),
-                object: self
-            )
+            cancelHidePerformRequest()
             return
         }
         if superview != nil && autoHide {
             hideAfterDelay(configuration.delayTime)
+            return
         }
     }
     
-    
-    
-    // MARK: - Deprecated
-    
-    /// Hides the  progress HUD immediately.
-    @available(*, deprecated, message: "Use hide() instead of dismiss(), this func will be removed")
-    open func dismiss() {
-        hide()
-    }
-    
-    /// Hides the  progress HUD after a delay.
-    ///
-    /// - Parameter duration: delay time,  defualt is`200ms`
-    @available(*, deprecated, message: "Use hideAfterDelay(:) instead of dismiss(delay:), this func will be removed")
-    open func dismissAfter(delay duration: TimeInterval = 0.2) {
-        hideAfterDelay(duration)
-    }
-    
-    /// Update content animatable.
-    @available(*, deprecated, message: "Use updateWithAnimation(:) instead of updateInAnimation(:), this func will be removed")
-    open func updateInAnimation(_ block: @escaping (IMProgressHUD) -> Void) {
-        updateWithAnimation(block)
+    /// Cancels  the hide perform request.
+    private func cancelHidePerformRequest() {
+        Self.cancelPreviousPerformRequests(
+            withTarget: self,
+            selector: #selector(hide),
+            object: self
+        )
+        
+        animator?.cancel(hud: self)
     }
 }
 
@@ -497,17 +494,11 @@ public extension IMProgressHUD {
     struct Configuration {
         
         /// Initializes.
-        public init() {
-                
-        }
+        public init() { }
         
         /// The dimming color.
         /// The default value is `nil`.
         public var dimmingColor: UIColor?
-        
-        /// Animation duration，default value is `0.15s`
-        @available(*, deprecated, message: "Use IMAnimatorTransitioning instead of fadeDuration, this property will be removed")
-        public var fadeDuration: TimeInterval = 0.15
                 
         /// The delay time for hiding HUD.
         /// The default value is `2.5s`.
@@ -527,18 +518,6 @@ public extension IMProgressHUD {
                 return UIBlurEffect(style: .dark)
             }
         }()
-        
-        /// The container's background color.
-        /// The default value is `#484B55`.
-        @available(*, deprecated, message: "Use backgroundColor instead of color, this property will be removed")
-        public var color: UIColor {
-            get {
-                backgroundColor
-            }
-            set {
-                backgroundColor = newValue
-            }
-        }
 
         /// The container's background color.
         /// The default value is `#484B55`.
@@ -548,13 +527,21 @@ public extension IMProgressHUD {
         /// The default value is `14.0`.
         public var cornerRadius: CGFloat = 14.0
         
+        /// The radius to use when drawing rounded corners for the container’s background.
+        /// The default value is `8.0`.
+        public var compactCornerRadius: CGFloat = 8.0
+        
         /// The distance in points between the content views.
         /// The default value is `12.0`.
         public var spacing: CGFloat = 12.0
 
         /// The custom distance that the content view is inset from the container's edges.
         /// The default value is `UIEdgeInsets(top: 18.0, left: 24.0, bottom: 18.0, right: 24.0)`.
-        public var contentInsets: UIEdgeInsets = UIEdgeInsets(top: 18.0, left: 24.0, bottom: 18.0, right: 24.0)
+        public var contentInsets = UIEdgeInsets(top: 18.0, left: 24.0, bottom: 18.0, right: 24.0)
+        
+        /// The custom distance that the content view is inset from the container's edges.
+        /// The default value is `UIEdgeInsets(top: 8.0, left: 12.0, bottom: 8.0, right: 12.0)`.
+        public var compactContentInsets = UIEdgeInsets(top: 8.0, left: 12.0, bottom: 8.0, right: 12.0)
                 
         /// The maximum size of the container view.
         /// The default value is `CGSize.zero`.
@@ -576,16 +563,24 @@ public extension IMProgressHUD {
 
         /// The indicator 's color.
         /// The default value is `UIColor.white`.
-        public var indicatorColor: UIColor = UIColor.white
+        public var indicatorColor: UIColor = .white
         
         /// The indicator 's size.
         /// The default value is `CGSize(width: 35.0, height: 35.0)`.
         public var indicatorSize: CGSize = CGSize(width: 35.0, height: 35.0)
         
+        /// The indicator 's size.
+        /// The default value is `CGSize(width: 18.0, height: 18.0)`.
+        public var compactIndicatorSize: CGSize = CGSize(width: 18.0, height: 18.0)
+        
         /// The indicator 's line width.
         /// The default value is `3.0`.
         public var lineWidth: CGFloat = 3.0
 
+        /// The indicator 's line width.
+        /// The default value is `2.0`.
+        public var compactLineWidth: CGFloat = 2.0
+        
         
         
         /// The color of the message text.
@@ -601,15 +596,10 @@ public extension IMProgressHUD {
         /// The default value is `UIFont.systemFont(ofSize: 16.0, weight: .regular)`
         ///
         /// If you’re using styled text, assigning a new value to this property applies the font to the entirety of the string in the attributedText property.
-        public var messageFont: UIFont = UIFont.systemFont(ofSize: 16.0, weight: .regular)
-        
-        /// The maximum number of lines for rendering  message text.
-        /// The default value is `0`.
-        ///
-        /// This property controls the maximum number of lines to use in order to fit the label’s text into its bounding rectangle.
-        /// To remove any maximum limit, and use as many lines as needed, set the value of this property to 0.
-        public var numberOfMessageLines: Int = 0
+        public var messageFont: UIFont = .systemFont(ofSize: 16.0, weight: .regular)
     }
+    
+    
     
     /// A flag used to determine how a progress HUD lays out its content when its bounds change.
     enum Location: Equatable {
@@ -623,21 +613,13 @@ public extension IMProgressHUD {
         /// Bottom location.
         case bottom(offset: CGFloat)
         
-        public static var top: Self {
-            .top(offset: 34.0)
-        }
+        public static var top: Self {  .top(offset: 34.0) }
         
-        public static var center: Self {
-            .center(offset: 0.0)
-        }
+        public static var center: Self { .center(offset: 0.0) }
         
-        public static var bottom: Self {
-            .bottom(offset: 34.0)
-        }
+        public static var bottom: Self { .bottom(offset: 34.0) }
         
-        public static var `default`: Self {
-            .center
-        }
+        public static var `default`: Self { .center }
     }
 }
 
@@ -695,6 +677,8 @@ public extension IMProgressHUD {
         self.activityIndicator = activityIndicator
     }
     
+    
+    
     /// An progress indicator type  that shows that a task is in progress HUD
     enum ProgressIndicatorType: String {
         
@@ -729,6 +713,8 @@ public extension IMProgressHUD {
         }
         activityIndicator = progressIndicator
     }
+    
+    
     
     /// The state for progress HUD.
     enum State {
@@ -770,8 +756,9 @@ public extension IMProgressHUD {
    
     /// 获取指定容器视图上显示的`HUD`
     ///
-    /// - parameter containerView: `IMProgressHUD` 显示的容器视图
-    /// - returns : `IMProgressHUD`对象
+    /// - Parameters:
+    ///   - containerView: `IMProgressHUD` 显示的容器视图
+    /// - Returns: `IMProgressHUD`对象
     @discardableResult
     static func hud(from containerView: UIView) -> IMProgressHUD? {
         containerView.subviews.first(where: { $0 is IMProgressHUD }) as? IMProgressHUD
@@ -819,25 +806,6 @@ public extension IMProgressHUD {
             return
         }
         shared.hideAfterDelay(delay)
-    }
-    
-    /// Presents the toast with a transition animation.
-    ///
-    /// - Parameters:
-    ///    - message: The toast’s message.
-    ///    - location: The toast’s location.
-    ///    - transitionStyle: The transition style to use when presenting the `IMProgressHUD`.
-    @discardableResult
-    static func showToast(
-        message: String,
-        location: Location,
-        transitionStyle: TransitionStyle = .default
-    ) -> IMProgressHUD {
-        let hud = IMProgressHUD()
-        hud.location = location
-        hud.message = message
-        hud.show(transitionStyle: transitionStyle)
-        return hud
     }
     
     /// Presents the toast with a transition animation.
@@ -958,34 +926,47 @@ public extension IMProgressHUD {
     
     
     
-    // MARK: - Deprecated
-    
-    /// Presents the progress HUD.
+    // MARK: - Make new HUD
+
+    /// Presents the toast with a transition animation.
     ///
     /// - Parameters:
-    ///    - windowView: The receiver’s window view.
-    ///         If  the windowView is nil,  we will user`KeyWindow` as the window view.
-    ///    - configureBlock: The configuration block.
-    @available(*, deprecated, message: "Use show(in:,transitionStyle:,configureBlock:) instead of show(in:, configureBlock:), this func will be removed")
-    static func show(
-        in containerView: UIView? = nil,
-        configureBlock: @escaping (IMProgressHUD) -> Void
-    ) {
-        show(in: containerView, transitionStyle: .none, configureBlock: configureBlock)
+    ///    - message: The toast’s message.
+    ///    - location: The toast’s location.
+    ///    - transitionStyle: The transition style to use when presenting the `IMProgressHUD`.
+    /// - Returns: A new HUD.
+    @available(*, deprecated, message: "Use makeToast(_:,location:,transitionStyle:) instead of showToast(message:,location:,transitionStyle:), this func will be removed")
+    @discardableResult
+    static func showToast(
+        message: String,
+        location: Location,
+        transitionStyle: TransitionStyle = .default
+    ) -> IMProgressHUD {
+        let hud = IMProgressHUD()
+        hud.location = location
+        hud.message = message
+        hud.show(transitionStyle: transitionStyle)
+        return hud
     }
     
-    /// Hides the  progress HUD immediately.
-    @available(*, deprecated, message: "Use hide() instead of dismiss(), this func will be removed")
-    static func dismiss() {
-        hide()
-    }
-   
-    /// Hides the  progress HUD after a delay.
+    /// Presents a new toast with a transition animation.
     ///
-    /// - Parameter duration: delay time.
-    @available(*, deprecated, message: "Use hideAfterDelay(:) instead of dismiss(delay:), this func will be removed")
-    static func dismissAfter(delay duration: TimeInterval) {
-        hideAfterDelay(duration)
+    /// - Parameters:
+    ///    - message: The toast’s message.
+    ///    - location: The toast’s location.
+    ///    - transitionStyle: The transition style to use when presenting the `IMProgressHUD`.
+    /// - Returns: A new HUD.
+    @discardableResult
+    static func makeToast(
+        _ message: String,
+        location: Location = .bottom,
+        transitionStyle: TransitionStyle = .default
+    ) -> IMProgressHUD {
+        let hud = IMProgressHUD()
+        hud.location = location
+        hud.message = message
+        hud.show(transitionStyle: transitionStyle)
+        return hud
     }
 }
 
@@ -995,31 +976,31 @@ public extension IMProgressHUD {
 
 private extension IMProgressHUD {
     
-    static func createContainerView() -> UIVisualEffectView {
+    static func makeContainerView() -> UIVisualEffectView {
         let visualEffectView = UIVisualEffectView(effect: nil)
         visualEffectView.translatesAutoresizingMaskIntoConstraints = false
         return visualEffectView
     }
     
-    static func createContentStackView() -> UIStackView {
+    static func makeContentStackView() -> UIStackView {
         let stackView = UIStackView(arrangedSubviews: [])
         stackView.alignment = .center
         stackView.distribution = .equalCentering
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.axis = .vertical
+        stackView.insetsLayoutMarginsFromSafeArea = false
         return stackView
     }
     
-    func createIconView() -> UIImageView {
+    func makeIconView() -> UIImageView {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.isUserInteractionEnabled = true
         return imageView
     }
     
-    func createMessageLabel() -> UILabel {
+    func makeMessageLabel() -> UILabel {
         let label = UILabel()
-        label.isUserInteractionEnabled = true
+        label.numberOfLines = 0
         return label
     }
 }

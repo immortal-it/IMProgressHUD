@@ -9,8 +9,15 @@ import UIKit
 
 extension NSLayoutConstraint {
     
+    @discardableResult
     func priority(_ layoutPriority: UILayoutPriority) -> Self {
         priority = layoutPriority
+        return self
+    }
+    
+    @discardableResult
+    func active(_ isActive: Bool) -> Self {
+        self.isActive = isActive
         return self
     }
 }
