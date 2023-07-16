@@ -13,7 +13,7 @@
 
 ## Requirements
 
-- iOS 10.0+
+- iOS 11.0+
 - Xcode 11+
 - Swift 5.0+
 
@@ -46,7 +46,7 @@ pod install
 [Carthage](https://github.com/Carthage/Carthage) is a decentralized dependency manager that builds your dependencies and provides you with binary frameworks. To integrate IMProgressHUD into your Xcode project using Carthage, specify it in your `Cartfile`:
 
 ```ogdl
-github "immortal-it/IMProgressHUD" ~> 0.0.4
+github "immortal-it/IMProgressHUD" ~> 1.0.0
 ```
 
 ### Swift Package Manager
@@ -57,7 +57,7 @@ Once you have your Swift package set up, adding IMProgressHUD as a dependency is
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/immortal-it/IMProgressHUD", .upToNextMajor(from: "0.0.4"))
+    .package(url: "https://github.com/immortal-it/IMProgressHUD", .upToNextMajor(from: "1.0.0"))
 ]
 ```
 
