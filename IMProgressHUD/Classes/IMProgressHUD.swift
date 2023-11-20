@@ -87,6 +87,7 @@ open class IMProgressHUD: UIView {
         }
         
         updateAligningIfNeeded()
+        fixContentInsetIfNeeded()
     }
     
     /// Update content animatable.
